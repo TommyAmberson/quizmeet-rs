@@ -1,3 +1,5 @@
+mod quiz_sum;
+
 fn main() {
-    println!("Hello, world!");
+    println!("{}", quiz_sum::hello());
 }
