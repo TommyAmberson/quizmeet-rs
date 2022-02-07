@@ -1,16 +1,16 @@
-use self::team::Team;
-use self::quizzer::Quizzer;
 use self::quiz::Quiz;
+use self::quizzer::Quizzer;
+use self::team::Team;
 
-pub mod team;
-pub mod quizzer;
 pub mod quiz;
+pub mod quizzer;
+pub mod team;
 pub fn hello() -> String {
     let t = Team::default();
-    t.print();
+    dbg!(t);
     let q = Quizzer::default();
-    q.print();
+    dbg!(q);
     let qq = Quiz::default();
-    qq.print();
+    dbg!(qq);
     String::from("Hello, world!")
 }

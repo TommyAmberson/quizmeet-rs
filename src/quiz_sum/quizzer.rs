@@ -46,9 +46,6 @@ impl Quizzer {
             sit,
         }
     }
-    pub fn print(&self) {
-        println!("{:?}", self);
-    }
 }
 impl Default for Quizzer {
     fn default() -> Self {

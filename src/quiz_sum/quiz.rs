@@ -16,9 +16,6 @@ impl Quiz {
             quizzers,
         }
     }
-    pub fn print(&self) {
-        println!("{:#?}", self);
-    }
 }
 impl Default for Quiz {
     fn default() -> Self {

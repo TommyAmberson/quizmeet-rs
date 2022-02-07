@@ -5,7 +5,9 @@ pub fn open(path_str: &str) -> Result<WorkBook, Box<dyn std::error::Error>> {
     let path = std::path::Path::new(path_str);
     let wb = spreadsheet_ods::read_ods(path)?;
     if wb.num_sheets() < 2 {
-        return Err(Box::new(OdsError::Ods(String::from("must have at least two sheets"))));
+        return Err(Box::new(OdsError::Ods(String::from(
+            "must have at least two sheets",
+        ))));
     }
     Ok(wb)
 }

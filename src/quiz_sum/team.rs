@@ -9,7 +9,14 @@ pub struct Team {
 }
 
 impl Team {
-    pub fn new(name: String, quiz: String, place: f64, score: i32, points: i32, errors: i32) -> Self {
+    pub fn new(
+        name: String,
+        quiz: String,
+        place: f64,
+        score: i32,
+        points: i32,
+        errors: i32,
+    ) -> Self {
         Team {
             name,
             quiz,
@@ -18,9 +25,6 @@ impl Team {
             points,
             errors,
         }
-    }
-    pub fn print(&self) {
-        println!("{:?}", self);
     }
 }
 
