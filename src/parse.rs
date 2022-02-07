@@ -2,15 +2,15 @@ use crate::quiz_sum::{quiz::Quiz, quizzer::Quizzer, team::Team};
 use spreadsheet_ods::{error::OdsError, Sheet, Value, WorkBook};
 
 #[derive(Debug)]
-pub struct QuizFile<'a> {
-    path_str: &'a str,
+pub struct QuizFile {
+    // path_str: &'a str,
     // quiz: Quiz,
     wb: WorkBook,
     // sheet: &'a Sheet,
 }
 
-impl<'a> QuizFile<'a> {
-    pub fn open(path_str: &'a str) -> Result<Self, Box<dyn std::error::Error>> {
+impl QuizFile {
+    pub fn open(path_str: &str) -> Result<Self, Box<dyn std::error::Error>> {
         let path = std::path::Path::new(path_str);
         let wb = spreadsheet_ods::read_ods(path)?;
         if wb.num_sheets() < 2 {
@@ -18,7 +18,8 @@ impl<'a> QuizFile<'a> {
             // return Err(Box::new(std::io::Error::new(std::io::ErrorKind::Other, "err")));
         }
         // let sheet = wb.sheet(1);
-        Ok(QuizFile { path_str, wb })
+        // Ok(QuizFile { path_str, wb })
+        Ok(QuizFile { wb })
     }
     // pub fn open_test() -> Result<Self, Box<dyn std::error::Error>> {
     //     open("tests/D1Q1.ods")
