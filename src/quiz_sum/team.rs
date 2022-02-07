@@ -1,25 +1,38 @@
 #[derive(Debug)]
 pub struct Team {
     name: String,
-    quiz: i32,
-    place: f32,
+    quiz: String,
+    place: f64,
     score: i32,
     points: i32,
     errors: i32,
 }
 
 impl Team {
-    pub fn new() -> Self {
+    pub fn new(name: String, quiz: String, place: f64, score: i32, points: i32, errors: i32) -> Self {
         Team {
-            name: String::from("test name"),
-            quiz: 0,
+            name,
+            quiz,
+            place,
+            score,
+            points,
+            errors,
+        }
+    }
+    pub fn print(&self) {
+        println!("{:?}", self);
+    }
+}
+
+impl Default for Team {
+    fn default() -> Self {
+        Team {
+            name: String::from("test team name"),
+            quiz: String::from("test quiz name"),
             place: 0.0,
             score: 0,
             points: 0,
             errors: 0,
         }
-    }
-    pub fn print(&self) {
-        println!("{:?}", self);
     }
 }

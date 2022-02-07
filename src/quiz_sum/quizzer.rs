@@ -3,8 +3,8 @@ use self::super::team::Team;
 #[derive(Debug)]
 pub struct Quizzer {
     name: String,
-    team: Team,
-    quiz: i32,
+    team: String,
+    quiz: String,
     points: i32,
     errors: i32,
     jumps: i32,
@@ -17,11 +17,45 @@ pub struct Quizzer {
 }
 
 impl Quizzer {
-    pub fn new() -> Self {
+    pub fn new(
+        name: String,
+        team: String,
+        quiz: String,
+        points: i32,
+        errors: i32,
+        jumps: i32,
+        refer: i32,
+        ftv: i32,
+        int: i32,
+        ma: i32,
+        q: i32,
+        sit: i32,
+    ) -> Self {
         Quizzer {
-            name: String::from("test name"),
-            team: Team::new(),
-            quiz: 0,
+            name,
+            team,
+            quiz,
+            points,
+            errors,
+            jumps,
+            refer,
+            ftv,
+            int,
+            ma,
+            q,
+            sit,
+        }
+    }
+    pub fn print(&self) {
+        println!("{:?}", self);
+    }
+}
+impl Default for Quizzer {
+    fn default() -> Self {
+        Quizzer {
+            name: String::from("test quizzer name"),
+            team: String::from("test team name"),
+            quiz: String::from("test quiz name"),
             points: 0,
             errors: 0,
             jumps: 0,
@@ -32,8 +66,5 @@ impl Quizzer {
             q: 0,
             sit: 0,
         }
-    }
-    pub fn print(&self) {
-        println!("{:?}", self);
     }
 }
