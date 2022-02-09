@@ -3,5 +3,5 @@ mod quiz_sum;
 
 fn main() {
     // println!("{}", quiz_sum::hello());
-    quiz_sum::open();
+    quiz_sum::open_test();
 }
