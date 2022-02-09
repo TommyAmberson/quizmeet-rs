@@ -1,5 +1,5 @@
 #[derive(Debug)]
-pub struct TeamEntry {
+pub struct Team {
     name: String,
     quiz: String,
     place: f64,
@@ -8,7 +8,7 @@ pub struct TeamEntry {
     errors: i32,
 }
 
-impl TeamEntry {
+impl Team {
     pub fn new(
         name: String,
         quiz: String,
@@ -17,7 +17,7 @@ impl TeamEntry {
         points: i32,
         errors: i32,
     ) -> Self {
-        TeamEntry {
+        Team {
             name,
             quiz,
             place,
@@ -28,9 +28,9 @@ impl TeamEntry {
     }
 }
 
-impl Default for TeamEntry {
+impl Default for Team {
     fn default() -> Self {
-        TeamEntry {
+        Team {
             name: String::from("test team name"),
             quiz: String::from("test quiz name"),
             place: 0.0,

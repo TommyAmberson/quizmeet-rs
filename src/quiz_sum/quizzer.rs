@@ -1,7 +1,7 @@
-// use self::super::team::TeamEntry;
+use self::super::team::Team;
 
 #[derive(Debug)]
-pub struct QuizzerEntry {
+pub struct Quizzer {
     name: String,
     team: String,
     quiz: String,
@@ -16,7 +16,7 @@ pub struct QuizzerEntry {
     sit: i32,
 }
 
-impl QuizzerEntry {
+impl Quizzer {
     pub fn new(
         name: String,
         team: String,
@@ -31,7 +31,7 @@ impl QuizzerEntry {
         q: i32,
         sit: i32,
     ) -> Self {
-        QuizzerEntry {
+        Quizzer {
             name,
             team,
             quiz,
@@ -47,9 +47,9 @@ impl QuizzerEntry {
         }
     }
 }
-impl Default for QuizzerEntry {
+impl Default for Quizzer {
     fn default() -> Self {
-        QuizzerEntry {
+        Quizzer {
             name: String::from("test quizzer name"),
             team: String::from("test team name"),
             quiz: String::from("test quiz name"),
