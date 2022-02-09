@@ -1,8 +1,8 @@
 use crate::quiz_sum::parse::parse;
 
 use self::quiz::Quiz;
-use self::quizzer::Quizzer;
-use self::team::Team;
+use self::quizzer::QuizzerEntry;
+use self::team::TeamEntry;
 
 pub mod parse;
 pub mod quiz;
@@ -26,7 +26,10 @@ impl QuizSummary {
         let quizzes = vec![parse(&wb).unwrap()];
         QuizSummary { quizzes }
     }
-    pub fn get_team_prelim() -> Vec<Team> {
+    pub fn get_team_prelim() -> Vec<TeamEntry> {
         unimplemented!();
     }
+    // fn get_order<T>(&self) -> Vec<T> {
+    //
+    // }
 }
