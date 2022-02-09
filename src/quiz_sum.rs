@@ -26,7 +26,14 @@ impl QuizSummary {
         let quizzes = vec![parse(&wb).unwrap()];
         QuizSummary { quizzes }
     }
-    pub fn get_team_prelim() -> Vec<Team> {
-        unimplemented!();
-    }
+    // pub fn get_team_prelim(&self) -> Vec<&str> {
+    //     self.quizzes.iter().filter(|q|)
+    //     let list: Vec<Team> = Vec::new();
+    //     for quiz in self.quizzes {
+    //         list.push(quiz);
+    //     }
+    //     let l = list.iter().map(|q| {
+    //         q
+    //     }).collect();
+    // }
 }
