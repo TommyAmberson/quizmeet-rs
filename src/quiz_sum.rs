@@ -1,16 +1,32 @@
+use crate::quiz_sum::parse::parse;
+
 use self::quiz::Quiz;
 use self::quizzer::Quizzer;
 use self::team::Team;
 
+pub mod parse;
 pub mod quiz;
 pub mod quizzer;
 pub mod team;
-pub fn hello() -> String {
-    let t = Team::default();
-    dbg!(t);
-    let q = Quizzer::default();
-    dbg!(q);
-    let qq = Quiz::default();
-    dbg!(qq);
-    String::from("Hello, world!")
+
+pub fn open() {
+    let wb = parse::open("tests/D1Q1.ods").unwrap();
+    dbg!(parse::parse(&wb).unwrap());
+}
+
+#[derive(Debug)]
+struct QuizSummary {
+    quizzes: Vec<Quiz>,
+}
+
+impl QuizSummary {
+    pub fn new() -> Self {
+        let wb = parse::open("tests/D1Q1.ods").unwrap();
+        dbg!(parse::parse(&wb).unwrap());
+        let quizzes = vec![parse(&wb).unwrap()];
+        QuizSummary { quizzes }
+    }
+    pub fn get_team_prelim() -> Vec<Team> {
+        unimplemented!();
+    }
 }
