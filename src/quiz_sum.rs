@@ -1,4 +1,5 @@
 use spreadsheet_ods::{error::OdsError, WorkBook};
+use std::collections::HashMap;
 
 fn open(path_str: &str) -> Result<WorkBook, Box<dyn std::error::Error>> {
     let path = std::path::Path::new(path_str);
@@ -161,37 +162,34 @@ impl QuizzerEntry {
 }
 
 #[derive(Debug)]
-struct QuizEntry {
-    name: String,
-    teams: Vec<TeamEntry>,
-    quizzers: Vec<QuizzerEntry>,
-}
-
-pub fn open_test() {
-    let wb = open("tests/D1Q1.ods").unwrap();
-    dbg!(parse(&wb).unwrap());
+struct TeamSummary<'a> {
+    teams: HashMap<&'a str, Vec<&'a TeamEntry>>,
+    quizzers: HashMap<&'a str, Vec<&'a QuizzerEntry>>,
 }
 
 #[derive(Debug)]
-struct QuizSummary {
+pub struct QuizSummary {
     entries: Vec<Entry>,
 }
 
 impl QuizSummary {
     pub fn new() -> Self {
         let wb = open("tests/D1Q1.ods").unwrap();
-        dbg!(parse(&wb).unwrap());
-        let entries = parse(&wb).unwrap();
+        let mut entries: Vec<Entry> = Vec::new();
+        dbg!(parse(&wb, &mut entries).unwrap());
         QuizSummary { entries }
     }
-    // pub fn get_team_prelim(&self) -> Vec<&str> {
-    //     self.quizzes.iter().filter(|q|)
-    //     let list: Vec<Team> = Vec::new();
-    //     for quiz in self.quizzes {
-    //         list.push(quiz);
-    //     }
-    //     let l = list.iter().map(|q| {
-    //         q
-    //     }).collect();
-    // }
+    pub fn get_team_prelim(&self) -> Vec<&str> {
+        let l = self
+            .entries
+            .iter()
+            .filter_map(|q| -> Option<&str> {
+                match q {
+                    Entry::Quizzer(_) => None,
+                    Entry::Team(t) => Some(&t.name),
+                }
+            })
+            .collect();
+        l
+    }
 }
