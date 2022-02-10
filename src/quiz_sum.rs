@@ -1,36 +1,6 @@
 use spreadsheet_ods::{error::OdsError, WorkBook};
 use std::collections::HashMap;
 
-fn open(path_str: &str) -> Result<WorkBook, Box<dyn std::error::Error>> {
-    let path = std::path::Path::new(path_str);
-    let wb = spreadsheet_ods::read_ods(path)?;
-    if wb.num_sheets() < 2 {
-        return Err(Box::new(OdsError::Ods(String::from(
-            "must have at least two sheets",
-        ))));
-    }
-    Ok(wb)
-}
-fn parse(wb: &WorkBook, entries: &mut Vec<Entry>) -> Result<(), Box<dyn std::error::Error>> {
-    // let mut entries: Vec<Entry> = Vec::new();
-    for row in 1..4 {
-        let team = match TeamEntry::get_from_row(wb, row) {
-            Ok(team) => team,
-            Err(_) => continue,
-        };
-        entries.push(Entry::Team(team));
-    }
-    for row in 6..21 {
-        let quizzer = match QuizzerEntry::get_from_row(wb, row) {
-            Ok(quizzer) => quizzer,
-            Err(_) => continue,
-        };
-        entries.push(Entry::Quizzer(quizzer));
-    }
-    // Ok(entries)
-    Ok(())
-}
-
 #[derive(Debug)]
 enum Entry {
     Team(TeamEntry),
@@ -162,34 +132,93 @@ impl QuizzerEntry {
 }
 
 #[derive(Debug)]
-struct TeamSummary<'a> {
-    teams: HashMap<&'a str, Vec<&'a TeamEntry>>,
-    quizzers: HashMap<&'a str, Vec<&'a QuizzerEntry>>,
+pub struct Summary {
+    teams: HashMap<String, Vec<TeamEntry>>,
+    quizzers: HashMap<String, Vec<QuizzerEntry>>,
 }
 
-#[derive(Debug)]
-pub struct QuizSummary {
-    entries: Vec<Entry>,
-}
-
-impl QuizSummary {
+impl Summary {
     pub fn new() -> Self {
-        let wb = open("tests/D1Q1.ods").unwrap();
-        let mut entries: Vec<Entry> = Vec::new();
-        dbg!(parse(&wb, &mut entries).unwrap());
-        QuizSummary { entries }
+        Summary {
+            teams: HashMap::new(),
+            quizzers: HashMap::new(),
+        }
     }
-    pub fn get_team_prelim(&self) -> Vec<&str> {
-        let l = self
-            .entries
-            .iter()
-            .filter_map(|q| -> Option<&str> {
-                match q {
-                    Entry::Quizzer(_) => None,
-                    Entry::Team(t) => Some(&t.name),
+    fn insert(&mut self, entry: Entry) {
+        match entry {
+            Entry::Team(t) => match self.teams.get_mut(&t.name.to_string()) {
+                Some(v) => {
+                    v.push(t);
                 }
-            })
-            .collect();
-        l
+                None => {
+                    self.teams.insert(t.name.to_string(), Vec::new());
+                }
+            },
+            Entry::Quizzer(q) => match self.quizzers.get_mut(&q.name.to_string()) {
+                Some(v) => {
+                    v.push(q);
+                }
+                None => {
+                    self.quizzers.insert(q.name.to_string(), Vec::new());
+                }
+            },
+        }
     }
+
+    pub fn open(&mut self, path_str: &str) -> Result<(), Box<dyn std::error::Error>> {
+        let wb = Self::open_wb(path_str)?;
+        self.parse(&wb)?;
+        Ok(())
+    }
+    pub fn open_test(&mut self) -> Result<(), Box<dyn std::error::Error>> {
+        self.open("tests/D1Q1.ods")
+    }
+
+    fn open_wb(path_str: &str) -> Result<WorkBook, Box<dyn std::error::Error>> {
+        let path = std::path::Path::new(path_str);
+        let wb = spreadsheet_ods::read_ods(path)?;
+        if wb.num_sheets() < 2 {
+            return Err(Box::new(OdsError::Ods(String::from(
+                "must have at least two sheets",
+            ))));
+        }
+        Ok(wb)
+    }
+    fn parse(&mut self, wb: &WorkBook) -> Result<(), Box<dyn std::error::Error>> {
+        // let mut entries: Vec<Entry> = Vec::new();
+        for row in 1..4 {
+            let team = match TeamEntry::get_from_row(wb, row) {
+                Ok(team) => team,
+                Err(_) => continue,
+            };
+            self.insert(Entry::Team(team));
+        }
+        for row in 6..21 {
+            let quizzer = match QuizzerEntry::get_from_row(wb, row) {
+                Ok(quizzer) => quizzer,
+                Err(_) => continue,
+            };
+            self.insert(Entry::Quizzer(quizzer));
+        }
+        // Ok(entries)
+        Ok(())
+    }
+
+    // pub fn open(&self, path: &str) {
+    //     let wb = open(path).unwrap();
+    //     dbg!(parse(&wb, &mut self).unwrap());
+    // }
+    // pub fn get_team_prelim(&self) -> Vec<&str> {
+    //     let l = self
+    //         .entries
+    //         .iter()
+    //         .filter_map(|q| -> Option<&str> {
+    //             match q {
+    //                 Entry::Quizzer(_) => None,
+    //                 Entry::Team(t) => Some(&t.name),
+    //             }
+    //         })
+    //         .collect();
+    //     l
+    // }
 }

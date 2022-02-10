@@ -3,7 +3,8 @@ mod quiz_sum;
 
 fn main() {
     // println!("{}", quiz_sum::hello());
-    let sum = quiz_sum::QuizSummary::new();
+    let mut sum = quiz_sum::Summary::new();
+    sum.open_test().unwrap();
     dbg!(&sum);
-    dbg!(sum.get_team_prelim());
+    // dbg!(sum.get_team_prelim());
 }
