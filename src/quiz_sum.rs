@@ -151,7 +151,7 @@ impl Summary {
                     v.push(t);
                 }
                 None => {
-                    self.teams.insert(t.name.to_string(), Vec::new());
+                    self.teams.insert(t.name.to_string(), vec![t]);
                 }
             },
             Entry::Quizzer(q) => match self.quizzers.get_mut(&q.name.to_string()) {
@@ -159,7 +159,7 @@ impl Summary {
                     v.push(q);
                 }
                 None => {
-                    self.quizzers.insert(q.name.to_string(), Vec::new());
+                    self.quizzers.insert(q.name.to_string(), vec![q]);
                 }
             },
         }
