@@ -2,6 +2,85 @@ use spreadsheet_ods::{error::OdsError, WorkBook};
 use std::collections::HashMap;
 
 #[derive(Debug)]
+enum QuizType {
+    Prelim(i32),
+    Elim(String),
+    Con((String, String)),
+}
+#[derive(Debug)]
+struct Quiz {
+    name: String,
+    div: i32,
+    quiz: QuizType,
+}
+impl Quiz {
+    fn open(path_str: &str) -> Result<(Quiz, WorkBook), Box<dyn std::error::Error>> {
+        let path = std::path::Path::new(path_str);
+        let wb = spreadsheet_ods::read_ods(path)?;
+        if wb.num_sheets() < 2 {
+            return Err(Box::new(OdsError::Ods(String::from(
+                "must have at least two sheets",
+            ))));
+        }
+        Ok((
+            Quiz {
+                name: wb
+                    .sheet(1)
+                    .value(1, 1)
+                    .as_str_opt()
+                    .ok_or("failed to parse quiz name")?
+                    .to_string(),
+                div: wb
+                    .sheet(0)
+                    .value(2, 2)
+                    .as_i32_opt()
+                    .ok_or("failed to parse quiz div")?,
+                quiz: {
+                    let v = wb.sheet(0).value(2, 4);
+                    v.as_i32_opt().map_or_else(
+                        || {
+                            v.as_str_opt()
+                                .map(|q| -> Result<QuizType, Box<dyn std::error::Error>> {
+                                    if q.len() > 1 && &q[..1] == "c" {
+                                        Ok(QuizType::Con((q[..1].to_string(), q[1..].to_string())))
+                                    } else {
+                                        Ok(QuizType::Elim(q.to_string()))
+                                    }
+                                })
+                                .ok_or("failed to parse quiz number")?
+                        },
+                        |q| Ok(QuizType::Prelim(q)),
+                    )?
+                    // match v {
+                    //     spreadsheet_ods::Value::Text(t) => QuizType::Elim(t.to_string()),
+                    //     spreadsheet_ods::Value::Number(n) => QuizType::Prelim(*n as i32),
+                    //     _ => {
+                    //         return Err(Box::new(OdsError::Ods(String::from(
+                    //             "failed to parse quiz number",
+                    //         ))))
+                    //     }
+                    // }
+                    // .as_i32_opt()
+                    // .as_str_opt()
+                    // .ok_or("failed to parse quiz number")?.to_string(),
+                },
+            },
+            wb,
+        ))
+    }
+}
+// fn open_wb(path_str: &str) -> Result<Quiz, Box<dyn std::error::Error>> {
+//     let path = std::path::Path::new(path_str);
+//     let wb = spreadsheet_ods::read_ods(path)?;
+//     if wb.num_sheets() < 2 {
+//         return Err(Box::new(OdsError::Ods(String::from(
+//             "must have at least two sheets",
+//         ))));
+//     }
+//     Ok(wb)
+// }
+
+#[derive(Debug)]
 enum Entry {
     Team(TeamEntry),
     Quizzer(QuizzerEntry),
@@ -135,6 +214,7 @@ impl QuizzerEntry {
 pub struct Summary {
     teams: HashMap<String, Vec<TeamEntry>>,
     quizzers: HashMap<String, Vec<QuizzerEntry>>,
+    quizes: Vec<Quiz>,
 }
 
 impl Summary {
@@ -142,6 +222,7 @@ impl Summary {
         Summary {
             teams: HashMap::new(),
             quizzers: HashMap::new(),
+            quizes: Vec::new(),
         }
     }
     fn insert(&mut self, entry: Entry) {
@@ -166,7 +247,8 @@ impl Summary {
     }
 
     pub fn open(&mut self, path_str: &str) -> Result<(), Box<dyn std::error::Error>> {
-        let wb = Self::open_wb(path_str)?;
+        let (quiz, wb) = Quiz::open(path_str)?;
+        self.quizes.push(quiz);
         self.parse(&wb)?;
         Ok(())
     }
@@ -174,16 +256,6 @@ impl Summary {
         self.open("tests/D1Q1.ods")
     }
 
-    fn open_wb(path_str: &str) -> Result<WorkBook, Box<dyn std::error::Error>> {
-        let path = std::path::Path::new(path_str);
-        let wb = spreadsheet_ods::read_ods(path)?;
-        if wb.num_sheets() < 2 {
-            return Err(Box::new(OdsError::Ods(String::from(
-                "must have at least two sheets",
-            ))));
-        }
-        Ok(wb)
-    }
     fn parse(&mut self, wb: &WorkBook) -> Result<(), Box<dyn std::error::Error>> {
         // let mut entries: Vec<Entry> = Vec::new();
         for row in 1..4 {
