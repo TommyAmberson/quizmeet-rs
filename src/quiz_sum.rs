@@ -44,13 +44,17 @@ impl Quiz {
                             v.as_str_opt()
                                 .map(|q| -> Result<QuizType, Box<dyn std::error::Error>> {
                                     if q.len() > 1 && &q[..1] == "c" {
-                                        Ok(QuizType::Consolation((q[..1].to_string(), q[1..].to_string())))
+                                        Ok(QuizType::Consolation((
+                                            q[..1].to_string(),
+                                            q[1..].to_string(),
+                                        )))
                                     } else {
                                         Ok(QuizType::Elimination(q.to_string()))
                                     }
                                 })
                                 .ok_or(
-                                    "failed to parse quiz number: ".to_owned() + (path.to_str().unwrap_or("invalid path"))
+                                    "failed to parse quiz number: ".to_owned()
+                                        + (path.to_str().unwrap_or("invalid path")),
                                 )?
                         },
                         |q| Ok(QuizType::Preliminary(q)),
