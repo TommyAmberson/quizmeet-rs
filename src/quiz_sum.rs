@@ -235,10 +235,10 @@ impl Summary {
         Ok(())
     }
     pub fn open_test(&mut self) -> Result<(), Box<dyn std::error::Error>> {
-        self.open(Path::new("tests/D1Q1.ods"))
+        self.open(Path::new("ods/D1Q1.ods"))
     }
     pub fn open_ods(&mut self) -> Result<(), Box<dyn std::error::Error>> {
-        for entry in glob("tests/*.ods")?.filter_map(Result::ok) {
+        for entry in glob("ods/*.ods")?.filter_map(Result::ok) {
             self.open(entry.as_path())?;
         }
         Ok(())
