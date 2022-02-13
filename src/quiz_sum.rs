@@ -200,7 +200,7 @@ impl QuizzerEntry {
 pub struct Summary {
     teams: HashMap<String, Vec<TeamEntry>>,
     quizzers: HashMap<String, Vec<QuizzerEntry>>,
-    quizes: Vec<Quiz>,
+    quizes: HashMap<String, Quiz>,
 }
 
 impl Summary {
@@ -208,7 +208,7 @@ impl Summary {
         Summary {
             teams: HashMap::new(),
             quizzers: HashMap::new(),
-            quizes: Vec::new(),
+            quizes: HashMap::new(),
         }
     }
     fn insert(&mut self, entry: Entry) {
@@ -234,7 +234,7 @@ impl Summary {
 
     pub fn open(&mut self, path: &Path) -> Result<(), Box<dyn std::error::Error>> {
         let (quiz, wb) = Quiz::open(path)?;
-        self.quizes.push(quiz);
+        self.quizes.insert(quiz.name.to_string(), quiz);
         self.parse(&wb)?;
         Ok(())
     }
