@@ -212,7 +212,7 @@ impl QuizzerEntry {
 pub struct Summary {
     teams: HashMap<String, Vec<TeamEntry>>,
     quizzers: HashMap<String, Vec<QuizzerEntry>>,
-    quizes: HashMap<String, Rc<Quiz>>,
+    quizzes: HashMap<String, Rc<Quiz>>,
 }
 
 impl Summary {
@@ -220,7 +220,7 @@ impl Summary {
         Summary {
             teams: HashMap::new(),
             quizzers: HashMap::new(),
-            quizes: HashMap::new(),
+            quizzes: HashMap::new(),
         }
     }
     fn insert(&mut self, entry: Entry) {
@@ -248,7 +248,7 @@ impl Summary {
         let (quiz, wb) = Quiz::open(path)?;
         let quiz = Rc::new(quiz);
         self.parse(&wb, &quiz)?;
-        self.quizes.insert(quiz.name.to_string(), quiz);
+        self.quizzes.insert(quiz.name.to_string(), quiz);
         Ok(())
     }
     pub fn open_test(&mut self) -> Result<(), Box<dyn std::error::Error>> {
@@ -293,17 +293,46 @@ impl Summary {
         self.teams
             .iter()
             // .filter(team_mask)
-            .map(|(name, quizes)| {
+            .map(|(name, quizzes)| {
                 (
                     name,
-                    quizes
+                    quizzes
                         .iter()
                         .filter(|t| quiz_mask(&t.quiz))
-                        .fold(0, |total, t| total + t.score),
+                        .fold(0., |total, t| {
+                            total + (t.points as f32) + (t.score as f32) / 10000.
+                        }),
                 )
             })
-            .sorted_by(|(_, a), (_, b)| Ord::cmp(&a, &b))
-            .map(|(name, _score)| -> &str { name })
+            .sorted_by(|(_, a), (_, b)| a.partial_cmp(b).unwrap())
+            .map(|(name, _points)| -> &str { name })
+            .collect()
+    }
+    pub fn get_quizzer_order<F>(&self, quiz_mask: F) -> Vec<&str>
+    where
+        // Ft: Fn(&(&String, &Vec<TeamEntry>)) -> bool,
+        F: Fn(&Quiz) -> bool,
+    {
+        self.quizzers
+            .iter()
+            // .filter(team_mask)
+            .map(|(name, quizzes)| {
+                let (points, errors) = quizzes
+                    .iter()
+                    .filter(|q| quiz_mask(&q.quiz))
+                    .fold((0, 0), |(points, errors), q| {
+                        (points + q.points, errors + q.errors)
+                    });
+                let average = points as f32 / quizzes.len() as f32;
+                let error_bonus = if errors > 0 {
+                    1. / (errors as f32 * 1000.)
+                } else {
+                    0.01
+                };
+                (name, average + error_bonus)
+            })
+            .sorted_by(|(_, a), (_, b)| a.partial_cmp(b).unwrap())
+            .map(|(name, _points)| -> &str { name })
             .collect()
     }
 }
