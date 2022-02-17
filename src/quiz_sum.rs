@@ -5,7 +5,7 @@ use std::rc::Rc;
 use std::{collections::HashMap, path::Path};
 
 #[derive(Debug)]
-enum QuizType {
+pub enum QuizType {
     Preliminary(i32),
     Elimination(String),
     Consolation((String, String)),
@@ -281,31 +281,31 @@ impl Summary {
         Ok(())
     }
 
-    // pub fn open(&self, path: &str) {
-    //     let wb = open(path).unwrap();
-    //     dbg!(parse(&wb, &mut self).unwrap());
-    // }
-    pub fn get_team_order<F>(&self, mask: F) -> Vec<&str>
+    pub fn get_team_prelims(&self, div: i32) -> Vec<&str> {
+        self.get_team_order(
+            |(_, _)| true,
+            |t| t.quiz.div == div && matches!(t.quiz.quiz, QuizType::Preliminary(_)),
+        )
+    }
+    fn get_team_order<Ft, Fq>(&self, team_mask: Ft, quiz_mask: Fq) -> Vec<&str>
     where
-        F: Fn(&(&String, &Vec<TeamEntry>)) -> bool,
+        Ft: Fn(&(&String, &Vec<TeamEntry>)) -> bool,
+        Fq: Fn(&&TeamEntry) -> bool,
     {
         self.teams
             .iter()
-            .filter(mask)
-            .map(|(name, quizes)| (name, quizes.iter().fold(0, |total, t| total + t.score)))
+            .filter(team_mask)
+            .map(|(name, quizes)| {
+                (
+                    name,
+                    quizes
+                        .iter()
+                        .filter(&quiz_mask)
+                        .fold(0, |total, t| total + t.score),
+                )
+            })
             .sorted_by(|(_, a), (_, b)| Ord::cmp(&a, &b))
             .map(|(name, _score)| -> &str { name })
             .collect()
-        // let l = self.teams.iter().filter_map(|(_, v)| {
-        //     if let Some(q) = v.get(0).map(|v| v.quiz) {
-        //         if let Some(quiz) = self.quizes.get(q) {
-        //             match quiz.quiz {
-        //                 QuizType::Preliminary(i32) => Some(v.name),
-        //                 _ => None,
-        //             }
-        //         }
-        //     }
-        // });
-        // l
     }
 }
