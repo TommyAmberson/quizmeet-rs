@@ -11,10 +11,10 @@ pub enum QuizType {
     Consolation((String, String)),
 }
 #[derive(Debug)]
-struct Quiz {
+pub struct Quiz {
     name: String,
-    div: i32,
-    quiz: QuizType,
+    pub div: i32,
+    pub quiz: QuizType,
 }
 impl Quiz {
     fn open(path: &Path) -> Result<(Quiz, WorkBook), Box<dyn std::error::Error>> {
@@ -282,25 +282,23 @@ impl Summary {
     }
 
     pub fn get_team_prelims(&self, div: i32) -> Vec<&str> {
-        self.get_team_order(
-            |(_, _)| true,
-            |t| t.quiz.div == div && matches!(t.quiz.quiz, QuizType::Preliminary(_)),
-        )
+        self.get_team_order(|q| q.div == div && matches!(q.quiz, QuizType::Preliminary(_)))
     }
-    fn get_team_order<Ft, Fq>(&self, team_mask: Ft, quiz_mask: Fq) -> Vec<&str>
+    // pub fn get_team_order
+    pub fn get_team_order<F>(&self, quiz_mask: F) -> Vec<&str>
     where
-        Ft: Fn(&(&String, &Vec<TeamEntry>)) -> bool,
-        Fq: Fn(&&TeamEntry) -> bool,
+        // Ft: Fn(&(&String, &Vec<TeamEntry>)) -> bool,
+        F: Fn(&Quiz) -> bool,
     {
         self.teams
             .iter()
-            .filter(team_mask)
+            // .filter(team_mask)
             .map(|(name, quizes)| {
                 (
                     name,
                     quizes
                         .iter()
-                        .filter(&quiz_mask)
+                        .filter(|t| quiz_mask(&t.quiz))
                         .fold(0, |total, t| total + t.score),
                 )
             })
