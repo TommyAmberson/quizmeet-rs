@@ -273,16 +273,17 @@ impl Summary {
     //     dbg!(parse(&wb, &mut self).unwrap());
     // }
     // pub fn get_team_prelim(&self) -> Vec<&str> {
-    //     let l = self
-    //         .entries
-    //         .iter()
-    //         .filter_map(|q| -> Option<&str> {
-    //             match q {
-    //                 Entry::Quizzer(_) => None,
-    //                 Entry::Team(t) => Some(&t.name),
-    //             }
-    //         })
-    //         .collect();
-    //     l
+    //     self.teams.iter().map
+        // let l = self.teams.iter().filter_map(|(_, v)| {
+        //     if let Some(q) = v.get(0).map(|v| v.quiz) {
+        //         if let Some(quiz) = self.quizes.get(q) {
+        //             match quiz.quiz {
+        //                 QuizType::Preliminary(i32) => Some(v.name),
+        //                 _ => None,
+        //             }
+        //         }
+        //     }
+        // });
+        // l
     // }
 }
