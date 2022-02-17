@@ -1,4 +1,5 @@
 use glob::glob;
+use itertools::Itertools;
 use spreadsheet_ods::{error::OdsError, WorkBook};
 use std::rc::Rc;
 use std::{collections::HashMap, path::Path};
@@ -284,18 +285,27 @@ impl Summary {
     //     let wb = open(path).unwrap();
     //     dbg!(parse(&wb, &mut self).unwrap());
     // }
-    // pub fn get_team_prelim(&self) -> Vec<&str> {
-    //     self.teams.iter().map
-    // let l = self.teams.iter().filter_map(|(_, v)| {
-    //     if let Some(q) = v.get(0).map(|v| v.quiz) {
-    //         if let Some(quiz) = self.quizes.get(q) {
-    //             match quiz.quiz {
-    //                 QuizType::Preliminary(i32) => Some(v.name),
-    //                 _ => None,
-    //             }
-    //         }
-    //     }
-    // });
-    // l
-    // }
+    pub fn get_team_order<F>(&self, mask: F) -> Vec<&str>
+    where
+        F: Fn(&(&String, &Vec<TeamEntry>)) -> bool,
+    {
+        self.teams
+            .iter()
+            .filter(mask)
+            .map(|(name, quizes)| (name, quizes.iter().fold(0, |total, t| total + t.score)))
+            .sorted_by(|(_, a), (_, b)| Ord::cmp(&a, &b))
+            .map(|(name, _score)| -> &str { name })
+            .collect()
+        // let l = self.teams.iter().filter_map(|(_, v)| {
+        //     if let Some(q) = v.get(0).map(|v| v.quiz) {
+        //         if let Some(quiz) = self.quizes.get(q) {
+        //             match quiz.quiz {
+        //                 QuizType::Preliminary(i32) => Some(v.name),
+        //                 _ => None,
+        //             }
+        //         }
+        //     }
+        // });
+        // l
+    }
 }
