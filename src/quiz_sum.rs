@@ -1,5 +1,6 @@
 use glob::glob;
 use spreadsheet_ods::{error::OdsError, WorkBook};
+use std::rc::Rc;
 use std::{collections::HashMap, path::Path};
 
 #[derive(Debug)]
@@ -75,7 +76,7 @@ enum Entry {
 #[derive(Debug)]
 struct TeamEntry {
     name: String,
-    quiz: String,
+    quiz: Rc<Quiz>,
     place: f64,
     score: i32,
     points: i32,
@@ -83,7 +84,11 @@ struct TeamEntry {
 }
 
 impl TeamEntry {
-    fn get_from_row(wb: &WorkBook, row: u32) -> Result<TeamEntry, Box<dyn std::error::Error>> {
+    fn get_from_row(
+        wb: &WorkBook,
+        row: u32,
+        quiz: &Rc<Quiz>,
+    ) -> Result<TeamEntry, Box<dyn std::error::Error>> {
         let sheet = wb.sheet(1);
         Ok(TeamEntry {
             name: String::from(
@@ -92,12 +97,13 @@ impl TeamEntry {
                     .as_str_opt()
                     .ok_or("failed to parse name")?,
             ),
-            quiz: String::from(
-                sheet
-                    .value(row, 1)
-                    .as_str_opt()
-                    .ok_or("failed to parse quiz")?,
-            ),
+            quiz: Rc::clone(quiz),
+            // quiz: String::from(
+            //     sheet
+            //         .value(row, 1)
+            //         .as_str_opt()
+            //         .ok_or("failed to parse quiz")?,
+            // ),
             place: sheet
                 .value(row, 2)
                 .as_f64_opt()
@@ -122,7 +128,7 @@ impl TeamEntry {
 struct QuizzerEntry {
     name: String,
     team: String,
-    quiz: String,
+    quiz: Rc<Quiz>,
     points: i32,
     errors: i32,
     jumps: i32,
@@ -135,7 +141,11 @@ struct QuizzerEntry {
 }
 
 impl QuizzerEntry {
-    fn get_from_row(wb: &WorkBook, row: u32) -> Result<QuizzerEntry, Box<dyn std::error::Error>> {
+    fn get_from_row(
+        wb: &WorkBook,
+        row: u32,
+        quiz: &Rc<Quiz>,
+    ) -> Result<QuizzerEntry, Box<dyn std::error::Error>> {
         let sheet = wb.sheet(1);
         Ok(QuizzerEntry {
             name: String::from(
@@ -150,12 +160,13 @@ impl QuizzerEntry {
                     .as_str_opt()
                     .ok_or("failed to parse team")?,
             ),
-            quiz: String::from(
-                sheet
-                    .value(row, 2)
-                    .as_str_opt()
-                    .ok_or("failed to parse quiz")?,
-            ),
+            quiz: Rc::clone(quiz),
+            // quiz: String::from(
+            //     sheet
+            //         .value(row, 2)
+            //         .as_str_opt()
+            //         .ok_or("failed to parse quiz")?,
+            // ),
             points: sheet
                 .value(row, 3)
                 .as_i32_opt()
@@ -200,7 +211,7 @@ impl QuizzerEntry {
 pub struct Summary {
     teams: HashMap<String, Vec<TeamEntry>>,
     quizzers: HashMap<String, Vec<QuizzerEntry>>,
-    quizes: HashMap<String, Quiz>,
+    quizes: HashMap<String, Rc<Quiz>>,
 }
 
 impl Summary {
@@ -234,8 +245,9 @@ impl Summary {
 
     pub fn open(&mut self, path: &Path) -> Result<(), Box<dyn std::error::Error>> {
         let (quiz, wb) = Quiz::open(path)?;
+        let quiz = Rc::new(quiz);
+        self.parse(&wb, &quiz)?;
         self.quizes.insert(quiz.name.to_string(), quiz);
-        self.parse(&wb)?;
         Ok(())
     }
     pub fn open_test(&mut self) -> Result<(), Box<dyn std::error::Error>> {
@@ -248,17 +260,17 @@ impl Summary {
         Ok(())
     }
 
-    fn parse(&mut self, wb: &WorkBook) -> Result<(), Box<dyn std::error::Error>> {
+    fn parse(&mut self, wb: &WorkBook, quiz: &Rc<Quiz>) -> Result<(), Box<dyn std::error::Error>> {
         // let mut entries: Vec<Entry> = Vec::new();
         for row in 1..4 {
-            let team = match TeamEntry::get_from_row(wb, row) {
+            let team = match TeamEntry::get_from_row(wb, row, quiz) {
                 Ok(team) => team,
                 Err(_) => continue,
             };
             self.insert(Entry::Team(team));
         }
         for row in 6..21 {
-            let quizzer = match QuizzerEntry::get_from_row(wb, row) {
+            let quizzer = match QuizzerEntry::get_from_row(wb, row, quiz) {
                 Ok(quizzer) => quizzer,
                 Err(_) => continue,
             };
@@ -274,16 +286,16 @@ impl Summary {
     // }
     // pub fn get_team_prelim(&self) -> Vec<&str> {
     //     self.teams.iter().map
-        // let l = self.teams.iter().filter_map(|(_, v)| {
-        //     if let Some(q) = v.get(0).map(|v| v.quiz) {
-        //         if let Some(quiz) = self.quizes.get(q) {
-        //             match quiz.quiz {
-        //                 QuizType::Preliminary(i32) => Some(v.name),
-        //                 _ => None,
-        //             }
-        //         }
-        //     }
-        // });
-        // l
+    // let l = self.teams.iter().filter_map(|(_, v)| {
+    //     if let Some(q) = v.get(0).map(|v| v.quiz) {
+    //         if let Some(quiz) = self.quizes.get(q) {
+    //             match quiz.quiz {
+    //                 QuizType::Preliminary(i32) => Some(v.name),
+    //                 _ => None,
+    //             }
+    //         }
+    //     }
+    // });
+    // l
     // }
 }
