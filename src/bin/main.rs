@@ -6,9 +6,9 @@ fn main() {
     match result {
         Ok(result) => {
             dbg!(result);
-        },
+        }
         Err(e) => {
             dbg!(e);
-        },
+        }
     }
 }
