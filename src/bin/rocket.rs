@@ -1,4 +1,5 @@
-#[macro_use] extern crate rocket;
+#[macro_use]
+extern crate rocket;
 
 #[macro_use(context)] // Or #[macro_use] to import all macros.
 extern crate quizmeet_rs;
@@ -32,11 +33,14 @@ fn summary() -> String {
 #[get("/")]
 pub fn tera() -> Template {
     let name = String::from("Tommy");
-    Template::render("index", context! {
-        title: "Hello",
-        name: Some(name),
-        items: vec!["One", "Two", "Three"],
-    })
+    Template::render(
+        "index",
+        context! {
+            title: "Hello",
+            name: Some(name),
+            items: vec!["One", "Two", "Three"],
+        },
+    )
 }
 
 #[launch]
@@ -47,4 +51,3 @@ fn rocket() -> _ {
         .mount("/tera", routes![tera])
         .attach(Template::fairing())
 }
-
