@@ -1,46 +1,10 @@
 #[macro_use] extern crate rocket;
 
+#[macro_use(context)] // Or #[macro_use] to import all macros.
+extern crate quizmeet_rs;
 use quizmeet_rs::quiz_sum::*;
 
 use rocket_dyn_templates::Template;
-use rocket::serde;
-
-#[macro_export]
-macro_rules! context {
-    ($($key:ident $(: $value:expr)?),*$(,)?) => {{
-        use $crate::serde::ser::{Serialize, Serializer, SerializeMap};
-        use ::std::fmt::{Debug, Formatter};
-
-        #[allow(non_camel_case_types)]
-        struct ContextMacroCtxObject<$($key: Serialize),*> {
-            $($key: $key),*
-        }
-
-        #[allow(non_camel_case_types)]
-        impl<$($key: Serialize),*> Serialize for ContextMacroCtxObject<$($key),*> {
-            fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
-                where S: Serializer,
-            {
-                let mut map = serializer.serialize_map(None)?;
-                $(map.serialize_entry(stringify!($key), &self.$key)?;)*
-                map.end()
-            }
-        }
-
-        #[allow(non_camel_case_types)]
-        impl<$($key: Debug + Serialize),*> Debug for ContextMacroCtxObject<$($key),*> {
-            fn fmt(&self, f: &mut Formatter<'_>) -> ::std::fmt::Result {
-                f.debug_struct("context!")
-                    $(.field(stringify!($key), &self.$key))*
-                    .finish()
-            }
-        }
-
-        ContextMacroCtxObject {
-            $($key $(: $value)?),*
-        }
-    }};
-}
 
 #[get("/")]
 fn index() -> &'static str {
