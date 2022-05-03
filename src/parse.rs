@@ -20,8 +20,8 @@ pub fn read_from_file(path: &Path) -> Result<QuizEntry, Box<dyn std::error::Erro
             Err(_) => continue,
         };
         team_entries.push(team);
-        dbg!(&row);
-        dbg!(&team_entries);
+        // dbg!(&row);
+        // dbg!(&team_entries);
     }
     let mut quizzer_entries: Vec<QuizzerEntry> = Vec::new();
     for row in 6..21 {
@@ -30,8 +30,8 @@ pub fn read_from_file(path: &Path) -> Result<QuizEntry, Box<dyn std::error::Erro
             Err(_) => continue,
         };
         quizzer_entries.push(quizzer);
-        dbg!(&row);
-        dbg!(&quizzer_entries);
+        // dbg!(&row);
+        // dbg!(&quizzer_entries);
     }
     Ok(QuizEntry {
         team_entries,
