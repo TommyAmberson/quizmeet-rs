@@ -5,13 +5,13 @@ use std::rc::Rc;
 use std::{collections::HashMap, path::Path};
 
 #[derive(Debug)]
-pub(crate) enum QuizType {
+pub enum QuizType {
     Preliminary(i32),
     Elimination(String),
     Consolation((String, String)),
 }
 #[derive(Debug)]
-pub(crate) struct Quiz {
+pub struct Quiz {
     name: String,
     pub div: i32,
     pub quiz: QuizType,
@@ -285,7 +285,7 @@ impl Summary {
         self.get_team_order(|q| q.div == div && matches!(q.quiz, QuizType::Preliminary(_)))
     }
     // pub fn get_team_order
-    pub(crate) fn get_team_order<F>(&self, quiz_mask: F) -> Vec<&str>
+    pub fn get_team_order<F>(&self, quiz_mask: F) -> Vec<&str>
     where
         // Ft: Fn(&(&String, &Vec<TeamEntry>)) -> bool,
         F: Fn(&Quiz) -> bool,
@@ -308,7 +308,7 @@ impl Summary {
             .map(|(name, _points)| -> &str { name })
             .collect()
     }
-    pub(crate) fn get_quizzer_order<F>(&self, quiz_mask: F) -> Vec<&str>
+    pub fn get_quizzer_order<F>(&self, quiz_mask: F) -> Vec<&str>
     where
         // Ft: Fn(&(&String, &Vec<TeamEntry>)) -> bool,
         F: Fn(&Quiz) -> bool,
