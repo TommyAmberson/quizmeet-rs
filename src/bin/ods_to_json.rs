@@ -2,7 +2,7 @@ extern crate serde_json;
 
 use clap::Parser;
 use glob::glob;
-use quizmeet_rs::{entries::QuizEntry, parse};
+use quizmeet_rs::{entries::*, parse};
 use std::fs::File;
 use std::path::{Path, PathBuf};
 
@@ -35,7 +35,10 @@ pub fn from_glob(g: &str) -> Result<(), Box<dyn std::error::Error>> {
     Ok(())
 }
 
-fn translate(read: &Path, write: &Path) -> Result<QuizEntry, Box<dyn std::error::Error>> {
+fn translate(
+    read: &Path,
+    write: &Path,
+) -> Result<(Vec<TeamEntry>, Vec<QuizzerEntry>), Box<dyn std::error::Error>> {
     // let mut path = PathBuf::from(p);
     dbg!(&read);
     let result = parse::read_from_file(read)?;

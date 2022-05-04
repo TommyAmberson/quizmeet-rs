@@ -1,12 +1,6 @@
 use serde::{Deserialize, Serialize};
 
 #[derive(Debug, Serialize, Deserialize)]
-pub struct QuizEntry {
-    pub team_entries: Vec<TeamEntry>,
-    pub quizzer_entries: Vec<QuizzerEntry>,
-}
-
-#[derive(Debug, Serialize, Deserialize)]
 pub struct TeamEntry {
     pub name: String,
     pub quiz: String,

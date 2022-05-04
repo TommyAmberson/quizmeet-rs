@@ -2,7 +2,9 @@ use crate::entries::*;
 use spreadsheet_ods::{error::OdsError, Sheet};
 use std::path::Path;
 
-pub fn read_from_file(path: &Path) -> Result<QuizEntry, Box<dyn std::error::Error>> {
+pub fn read_from_file(
+    path: &Path,
+) -> Result<(Vec<TeamEntry>, Vec<QuizzerEntry>), Box<dyn std::error::Error>> {
     dbg!(path.display());
 
     let wb = spreadsheet_ods::read_ods(path)?;
@@ -32,10 +34,7 @@ pub fn read_from_file(path: &Path) -> Result<QuizEntry, Box<dyn std::error::Erro
         // dbg!(&row);
         // dbg!(&quizzer_entries);
     }
-    Ok(QuizEntry {
-        team_entries,
-        quizzer_entries,
-    })
+    Ok((team_entries, quizzer_entries))
 }
 
 fn team(sheet: &Sheet, row: u32) -> Result<TeamEntry, Box<dyn std::error::Error>> {
