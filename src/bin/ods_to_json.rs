@@ -4,7 +4,7 @@ use clap::Parser;
 use glob::glob;
 use quizmeet_rs::{entries::QuizEntry, parse};
 use std::fs::File;
-use std::path::{Path,PathBuf};
+use std::path::{Path, PathBuf};
 
 #[derive(Parser)]
 struct Cli {

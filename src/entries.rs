@@ -1,4 +1,4 @@
-use serde::{Serialize, Deserialize};
+use serde::{Deserialize, Serialize};
 
 #[derive(Debug, Serialize, Deserialize)]
 pub struct QuizEntry {
@@ -31,4 +31,3 @@ pub struct QuizzerEntry {
     pub q: i32,
     pub sit: i32,
 }
-
