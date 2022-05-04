@@ -1,0 +1,11 @@
+#!/bin/bash
+
+# nodemon -e ods --watch ods --exec ./convert
+inotifywait -e close_write,moved_to,moved_from,create,delete -m ods --format '%e %w%f' | 
+    while read -r event filename; do
+        if [[ "$filename" == *.ods ]]; then
+            # echo "$event -- $filename"
+            ./convert "$filename"
+        fi
+    done
+

@@ -1,0 +1,8 @@
+#!/bin/bash
+
+for json in json/*.json; do
+    ods="ods/$(basename "$json" .json).ods"
+    if [ ! -f "$ods" ]; then
+        rm -i "$json"
+    fi
+done
