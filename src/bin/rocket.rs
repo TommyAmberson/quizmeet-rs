@@ -12,7 +12,7 @@ fn index() -> &'static str {
     "Hello, world!"
 }
 
-#[get("/")]
+#[get("/summary")]
 fn summary() -> String {
     // println!("{}", quiz_sum::hello());
     let mut sum = Summary::new();
@@ -30,7 +30,7 @@ fn summary() -> String {
     result
 }
 
-#[get("/")]
+#[get("/tera")]
 pub fn tera() -> Template {
     let name = String::from("Tommy");
     Template::render(
@@ -46,8 +46,6 @@ pub fn tera() -> Template {
 #[launch]
 fn rocket() -> _ {
     rocket::build()
-        .mount("/", routes![index])
-        .mount("/summary", routes![summary])
-        .mount("/tera", routes![tera])
+        .mount("/", routes![index, summary, tera])
         .attach(Template::fairing())
 }
