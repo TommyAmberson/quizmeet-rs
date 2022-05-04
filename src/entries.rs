@@ -23,11 +23,16 @@ impl Entry for TeamEntry {
         &self.name
     }
     fn add_to<'a>(&self, accum: &'a mut Self) -> Result<&'a mut Self, Box<dyn std::error::Error>> {
+        if accum.name == "" {
+            accum.name = self.name.clone();
+        }
         if self.name != accum.name {
             bail!("needs same name")
         }
 
-        accum.quiz += ",";
+        if accum.quiz.len() > 0 {
+            accum.quiz += ",";
+        }
         accum.quiz += &self.quiz;
 
         accum.place += self.place;
@@ -69,14 +74,22 @@ impl Entry for QuizzerEntry {
         &self.name
     }
     fn add_to<'a>(&self, accum: &'a mut Self) -> Result<&'a mut Self, Box<dyn std::error::Error>> {
+        if accum.name == "" {
+            accum.name = self.name.clone();
+        }
         if self.name != accum.name {
             bail!("needs same name")
+        }
+        if accum.team == "" {
+            accum.team = self.team.clone();
         }
         if self.team != accum.team {
             bail!("needs same team")
         }
 
-        accum.quiz += ",";
+        if accum.quiz.len() > 0 {
+            accum.quiz += ",";
+        }
         accum.quiz += &self.quiz;
 
         accum.points += self.points;
