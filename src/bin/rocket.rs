@@ -1,65 +1,79 @@
-#[macro_use] extern crate rocket;
+#[macro_use]
+extern crate rocket;
 
+#[macro_use(context)]
+extern crate quizmeet_rs;
+
+use quizmeet_rs::{entries::*, io::*, quiz_sum::*};
 use rocket_dyn_templates::Template;
-use rocket::serde;
-
-#[macro_export]
-macro_rules! context {
-    ($($key:ident $(: $value:expr)?),*$(,)?) => {{
-        use $crate::serde::ser::{Serialize, Serializer, SerializeMap};
-        use ::std::fmt::{Debug, Formatter};
-
-        #[allow(non_camel_case_types)]
-        struct ContextMacroCtxObject<$($key: Serialize),*> {
-            $($key: $key),*
-        }
-
-        #[allow(non_camel_case_types)]
-        impl<$($key: Serialize),*> Serialize for ContextMacroCtxObject<$($key),*> {
-            fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
-                where S: Serializer,
-            {
-                let mut map = serializer.serialize_map(None)?;
-                $(map.serialize_entry(stringify!($key), &self.$key)?;)*
-                map.end()
-            }
-        }
-
-        #[allow(non_camel_case_types)]
-        impl<$($key: Debug + Serialize),*> Debug for ContextMacroCtxObject<$($key),*> {
-            fn fmt(&self, f: &mut Formatter<'_>) -> ::std::fmt::Result {
-                f.debug_struct("context!")
-                    $(.field(stringify!($key), &self.$key))*
-                    .finish()
-            }
-        }
-
-        ContextMacroCtxObject {
-            $($key $(: $value)?),*
-        }
-    }};
-}
+use std::collections::HashMap;
 
 #[get("/")]
 fn index() -> &'static str {
     "Hello, world!"
 }
 
-#[get("/")]
+#[get("/summary")]
+fn summary() -> String {
+    // println!("{}", quiz_sum::hello());
+    let mut sum = Summary::new();
+    sum.open_ods().unwrap();
+    // dbg!(&sum);
+    // dbg!(sum.get_team_prelims(1));
+    let mut result = String::from("");
+    let t = sum.get_team_order(|q| q.div == 1 && matches!(q.quiz, QuizType::Preliminary(_)));
+    dbg!(&t);
+    result.push_str(&format!("{:?}", &t));
+    let q = sum.get_quizzer_order(|q| q.div == 1);
+    dbg!(&q);
+    result.push_str(&format!("{:?}", q));
+
+    result
+}
+
+#[get("/parse")]
+fn parse() -> String {
+    let g = String::from("json/*.json");
+    let mut team_entries: Vec<TeamEntry> = Vec::new();
+    let mut quizzer_entries: Vec<QuizzerEntry> = Vec::new();
+    from_glob(&g, |entry| {
+        let result = read(entry.as_path())?;
+        team_entries.extend(result.0);
+        quizzer_entries.extend(result.1);
+        Ok(())
+    })
+    .unwrap();
+    let team_sums: HashMap<String, TeamEntry> = group_by_name(team_entries)
+        .into_iter()
+        .map(|(k, v)| (k, sum(v).unwrap()))
+        .collect();
+    let quizzer_sums: HashMap<String, QuizzerEntry> = group_by_name(quizzer_entries)
+        .into_iter()
+        .map(|(k, v)| (k, sum(v).unwrap()))
+        .collect();
+
+    format!(
+        "team_sums: {:#?}\nquizzer_sums: {:#?}",
+        team_sums, quizzer_sums
+    )
+}
+
+#[get("/tera")]
 pub fn tera() -> Template {
     let name = String::from("Tommy");
-    Template::render("index", context! {
-        title: "Hello",
-        name: Some(name),
-        items: vec!["One", "Two", "Three"],
-    })
+    Template::render(
+        "index",
+        context! {
+            title: "Hello",
+            name: Some(name),
+            items: vec!["One", "Two", "Three"],
+        },
+    )
 }
 
 #[launch]
 fn rocket() -> _ {
     rocket::build()
-        .mount("/", routes![index])
-        .mount("/tera", routes![tera])
+        .mount("/", routes![index, summary, parse, tera])
         .attach(Template::fairing())
 }
-
