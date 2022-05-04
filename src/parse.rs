@@ -5,7 +5,7 @@ use std::path::Path;
 pub fn read_from_file(
     path: &Path,
 ) -> Result<(Vec<TeamEntry>, Vec<QuizzerEntry>), Box<dyn std::error::Error>> {
-    dbg!(path.display());
+    // dbg!(path.display());
 
     let wb = spreadsheet_ods::read_ods(path)?;
     if wb.num_sheets() < 2 {
