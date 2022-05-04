@@ -1,8 +1,10 @@
 use serde::{Deserialize, Serialize};
+use simple_error::bail;
 use std::collections::HashMap;
 
 pub trait Entry {
     fn get_name(&self) -> &str;
+    fn add_to<'a>(&self, accum: &'a mut Self) -> Result<&'a mut Self, Box<dyn std::error::Error>>;
     fn empty() -> Self;
 }
 
@@ -19,6 +21,12 @@ pub struct TeamEntry {
 impl Entry for TeamEntry {
     fn get_name(&self) -> &str {
         &self.name
+    }
+    fn add_to<'a>(&self, accum: &'a mut Self) -> Result<&'a mut Self, Box<dyn std::error::Error>> {
+        if self.name != accum.name {
+            bail!("needs same name")
+        }
+        Ok(accum)
     }
     fn empty() -> Self {
         Self {
@@ -51,6 +59,12 @@ pub struct QuizzerEntry {
 impl Entry for QuizzerEntry {
     fn get_name(&self) -> &str {
         &self.name
+    }
+    fn add_to<'a>(&self, accum: &'a mut Self) -> Result<&'a mut Self, Box<dyn std::error::Error>> {
+        if self.name != accum.name {
+            bail!("needs same name")
+        }
+        Ok(accum)
     }
     fn empty() -> Self {
         Self {
@@ -87,4 +101,15 @@ where
         // }
     }
     map
+}
+
+pub fn sum<T>(entries: Vec<T>) -> Result<T, Box<dyn std::error::Error>>
+where
+    T: Entry,
+{
+    let mut accum: T = T::empty();
+    for entry in entries {
+        entry.add_to(&mut accum)?;
+    }
+    Ok(accum)
 }
