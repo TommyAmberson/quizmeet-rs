@@ -26,6 +26,14 @@ impl Entry for TeamEntry {
         if self.name != accum.name {
             bail!("needs same name")
         }
+
+        accum.quiz += ",";
+        accum.quiz += &self.quiz;
+
+        accum.place += self.place;
+        accum.score += self.score;
+        accum.points += self.points;
+        accum.errors += self.errors;
         Ok(accum)
     }
     fn empty() -> Self {
@@ -64,6 +72,22 @@ impl Entry for QuizzerEntry {
         if self.name != accum.name {
             bail!("needs same name")
         }
+        if self.team != accum.team {
+            bail!("needs same team")
+        }
+
+        accum.quiz += ",";
+        accum.quiz += &self.quiz;
+
+        accum.points += self.points;
+        accum.errors += self.errors;
+        accum.jumps += self.jumps;
+        accum.refer += self.refer;
+        accum.ftv += self.ftv;
+        accum.int += self.int;
+        accum.ma += self.ma;
+        accum.q += self.q;
+        accum.sit += self.sit;
         Ok(accum)
     }
     fn empty() -> Self {
