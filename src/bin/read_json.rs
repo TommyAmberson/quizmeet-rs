@@ -1,5 +1,6 @@
 use clap::Parser;
 use quizmeet_rs::{entries::*, io::*};
+use std::collections::HashMap;
 
 #[derive(Parser)]
 struct Cli {
@@ -20,5 +21,15 @@ fn main() {
     });
     dbg!(&r);
     r.unwrap();
+    let team_sums: HashMap<String, TeamEntry> = group_by_name(team_entries)
+        .into_iter()
+        .map(|(k, v)| (k, sum(v).unwrap()))
+        .collect();
+    dbg!(team_sums);
+    let quizzer_sums: HashMap<String, QuizzerEntry> = group_by_name(quizzer_entries)
+        .into_iter()
+        .map(|(k, v)| (k, sum(v).unwrap()))
+        .collect();
+    dbg!(quizzer_sums);
     // println!("team_entries: {:?}\nquizzer_entries: {:?}", team_entries, quizzer_entries);
 }
