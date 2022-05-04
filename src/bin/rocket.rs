@@ -4,8 +4,9 @@ extern crate rocket;
 #[macro_use(context)]
 extern crate quizmeet_rs;
 
-use quizmeet_rs::quiz_sum::*;
+use quizmeet_rs::{entries::*, io::*, quiz_sum::*};
 use rocket_dyn_templates::Template;
+use std::collections::HashMap;
 
 #[get("/")]
 fn index() -> &'static str {
@@ -30,6 +31,33 @@ fn summary() -> String {
     result
 }
 
+#[get("/parse")]
+fn parse() -> String {
+    let g = String::from("json/*.json");
+    let mut team_entries: Vec<TeamEntry> = Vec::new();
+    let mut quizzer_entries: Vec<QuizzerEntry> = Vec::new();
+    from_glob(&g, |entry| {
+        let result = read(entry.as_path())?;
+        team_entries.extend(result.0);
+        quizzer_entries.extend(result.1);
+        Ok(())
+    })
+    .unwrap();
+    let team_sums: HashMap<String, TeamEntry> = group_by_name(team_entries)
+        .into_iter()
+        .map(|(k, v)| (k, sum(v).unwrap()))
+        .collect();
+    let quizzer_sums: HashMap<String, QuizzerEntry> = group_by_name(quizzer_entries)
+        .into_iter()
+        .map(|(k, v)| (k, sum(v).unwrap()))
+        .collect();
+
+    format!(
+        "team_sums: {:#?}\nquizzer_sums: {:#?}",
+        team_sums, quizzer_sums
+    )
+}
+
 #[get("/tera")]
 pub fn tera() -> Template {
     let name = String::from("Tommy");
@@ -46,6 +74,6 @@ pub fn tera() -> Template {
 #[launch]
 fn rocket() -> _ {
     rocket::build()
-        .mount("/", routes![index, summary, tera])
+        .mount("/", routes![index, summary, parse, tera])
         .attach(Template::fairing())
 }
