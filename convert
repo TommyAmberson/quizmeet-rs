@@ -8,7 +8,7 @@ convert () {
     if [ ! -f "$json" ] || [ "$ods" -nt "$json" ]; then
     # if [ "$ods" -nt "$json" ]; then
         # echo "newer"
-        target/debug/main "$ods"
+        target/debug/ods_to_json "$ods"
     fi
 }
 
