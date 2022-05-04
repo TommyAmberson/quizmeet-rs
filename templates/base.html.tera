@@ -5,6 +5,7 @@
     <title>QuizMeet</title>
   </head>
   <body>
-        Hello World!
+    {% block content %}{% endblock content %}
+    <!-- Hello World! -->
   </body>
 </html>
