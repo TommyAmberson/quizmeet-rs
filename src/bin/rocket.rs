@@ -1,10 +1,10 @@
 #[macro_use]
 extern crate rocket;
 
-#[macro_use(context)] // Or #[macro_use] to import all macros.
+#[macro_use(context)]
 extern crate quizmeet_rs;
-use quizmeet_rs::quiz_sum::*;
 
+use quizmeet_rs::quiz_sum::*;
 use rocket_dyn_templates::Template;
 
 #[get("/")]
