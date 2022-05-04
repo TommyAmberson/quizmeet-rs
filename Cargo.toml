@@ -10,9 +10,6 @@ itertools = "0.10.3"
 glob = "0.3.0"
 spreadsheet-ods = "0.9.0"
 rocket = "0.5.0-rc.1"
+rocket_dyn_templates = { version = "0.1.0-rc.1", features = ["tera"] }
 serde = "1.0.137"
 serde_json = "1.0"
-
-[dependencies.rocket_dyn_templates]
-version = "0.1.0-rc.1"
-features = ["tera"]
