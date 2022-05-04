@@ -11,7 +11,6 @@ where
     F: Fn(PathBuf) -> Result<(), Box<dyn std::error::Error>>,
 {
     for entry in glob(g)?.filter_map(Result::ok) {
-        // translate(entry)?;
         action(entry)?;
     }
     Ok(())
