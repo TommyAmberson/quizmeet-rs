@@ -9,12 +9,5 @@ struct Cli {
 fn main() {
     let args = Cli::parse();
     let g = args.g.unwrap_or(String::from("ods/*.ods"));
-    match from_glob(&g, translate) {
-        Ok(_result) => {
-            // dbg!(result);
-        }
-        Err(e) => {
-            dbg!(e);
-        }
-    }
+    from_glob(&g, translate).unwrap();
 }
