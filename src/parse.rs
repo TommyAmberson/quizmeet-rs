@@ -1,7 +1,6 @@
+use crate::entries::*;
 use spreadsheet_ods::{error::OdsError, Sheet};
 use std::path::Path;
-
-use crate::entries::*;
 
 pub fn read_from_file(path: &Path) -> Result<QuizEntry, Box<dyn std::error::Error>> {
     dbg!(path.display());
