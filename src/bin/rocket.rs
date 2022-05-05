@@ -32,8 +32,7 @@ fn summary() -> String {
 
 #[get("/parse")]
 fn parse() -> String {
-    let r = open_json(Some(String::from("json/*.json")));
-    let (team_sums, quizzer_sums) = r.unwrap();
+    let (team_sums, quizzer_sums) = open_json(Some(String::from("json/*.json")), None).unwrap();
 
     format!(
         "team_sums: {:#?}\nquizzer_sums: {:#?}",
