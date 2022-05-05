@@ -150,3 +150,16 @@ where
     }
     Ok(accum)
 }
+
+pub fn group_and_sum<T>(entries: Vec<T>) -> Result<HashMap<String, T>, Box<dyn std::error::Error>>
+where
+    T: Entry,
+{
+    group_by_name(entries)
+        .into_iter()
+        .map(|(k, v)| {
+            let v = sum(v)?;
+            Ok((k, v))
+        })
+        .collect()
+}

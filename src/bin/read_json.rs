@@ -21,15 +21,9 @@ fn main() {
     });
     dbg!(&r);
     r.unwrap();
-    let team_sums: HashMap<String, TeamEntry> = group_by_name(team_entries)
-        .into_iter()
-        .map(|(k, v)| (k, sum(v).unwrap()))
-        .collect();
+    let team_sums = group_and_sum(team_entries).unwrap();
     dbg!(team_sums);
-    let quizzer_sums: HashMap<String, QuizzerEntry> = group_by_name(quizzer_entries)
-        .into_iter()
-        .map(|(k, v)| (k, sum(v).unwrap()))
-        .collect();
+    let quizzer_sums = group_and_sum(quizzer_entries).unwrap();
     dbg!(quizzer_sums);
     // println!("team_entries: {:?}\nquizzer_entries: {:?}", team_entries, quizzer_entries);
 }

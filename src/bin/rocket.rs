@@ -43,14 +43,8 @@ fn parse() -> String {
         Ok(())
     })
     .unwrap();
-    let team_sums: HashMap<String, TeamEntry> = group_by_name(team_entries)
-        .into_iter()
-        .map(|(k, v)| (k, sum(v).unwrap()))
-        .collect();
-    let quizzer_sums: HashMap<String, QuizzerEntry> = group_by_name(quizzer_entries)
-        .into_iter()
-        .map(|(k, v)| (k, sum(v).unwrap()))
-        .collect();
+    let team_sums = group_and_sum(team_entries).unwrap();
+    let quizzer_sums = group_and_sum(quizzer_entries).unwrap();
 
     format!(
         "team_sums: {:#?}\nquizzer_sums: {:#?}",
