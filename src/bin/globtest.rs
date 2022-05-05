@@ -21,11 +21,8 @@ fn main() {
     )
     .unwrap();
     dbg!(&re);
-    from_glob(&g, |e| {
-        if re.is_match(e.to_str().unwrap()) {
-            dbg!(&e);
-        }
-        // dbg!(&e);
+    from_glob_regex(&g, re, |e| {
+        dbg!(&e);
         Ok(())
     })
     .unwrap();
