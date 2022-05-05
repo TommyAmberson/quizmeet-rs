@@ -11,7 +11,7 @@ where
     F: FnMut(PathBuf) -> Result<(), Box<dyn std::error::Error>>,
 {
     for entry in glob(g)?.filter_map(Result::ok) {
-        dbg!(&entry);
+        // dbg!(&entry);
         action(entry)?;
     }
     Ok(())
