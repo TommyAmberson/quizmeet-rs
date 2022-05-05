@@ -4,9 +4,8 @@ extern crate rocket;
 #[macro_use(context)]
 extern crate quizmeet_rs;
 
-use quizmeet_rs::{entries::*, io::*, quiz_sum::*};
+use quizmeet_rs::{quiz_sum::*, stats::*};
 use rocket_dyn_templates::Template;
-use std::collections::HashMap;
 
 #[get("/")]
 fn index() -> &'static str {
@@ -33,18 +32,8 @@ fn summary() -> String {
 
 #[get("/parse")]
 fn parse() -> String {
-    let g = String::from("json/*.json");
-    let mut team_entries: Vec<TeamEntry> = Vec::new();
-    let mut quizzer_entries: Vec<QuizzerEntry> = Vec::new();
-    from_glob(&g, |entry| {
-        let result = read(entry.as_path())?;
-        team_entries.extend(result.0);
-        quizzer_entries.extend(result.1);
-        Ok(())
-    })
-    .unwrap();
-    let team_sums = group_and_sum(team_entries).unwrap();
-    let quizzer_sums = group_and_sum(quizzer_entries).unwrap();
+    let r = open_json(Some(String::from("json/*.json")));
+    let (team_sums, quizzer_sums) = r.unwrap();
 
     format!(
         "team_sums: {:#?}\nquizzer_sums: {:#?}",
