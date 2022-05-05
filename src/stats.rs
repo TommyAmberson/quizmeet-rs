@@ -1,7 +1,10 @@
 use crate::{entries::*, io::*};
 use std::collections::HashMap;
 
-pub fn open_json(g: Option<String>) -> Result<(HashMap<String, TeamEntry>, HashMap<String, QuizzerEntry>), Box<dyn std::error::Error>> {
+pub fn open_json(
+    g: Option<String>,
+) -> Result<(HashMap<String, TeamEntry>, HashMap<String, QuizzerEntry>), Box<dyn std::error::Error>>
+{
     let g = g.unwrap_or(String::from("json/*.json"));
     let mut team_entries: Vec<TeamEntry> = Vec::new();
     let mut quizzer_entries: Vec<QuizzerEntry> = Vec::new();
