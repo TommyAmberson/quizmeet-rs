@@ -1356,6 +1356,7 @@ dependencies = [
  "clap",
  "glob",
  "itertools",
+ "regex",
  "rocket",
  "rocket_dyn_templates",
  "serde",
