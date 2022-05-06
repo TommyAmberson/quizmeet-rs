@@ -22,3 +22,15 @@ pub fn open_json(
     let quizzer_sums = group_and_sum(quizzer_entries)?;
     Ok((team_sums, quizzer_sums))
 }
+
+pub fn get_lists(
+    g: Option<String>,
+    re: Option<Regex>,
+) -> Result<(Vec<TeamEntry>, Vec<QuizzerEntry>), Box<dyn std::error::Error>> {
+    let (team_sums, quizzer_sums) = open_json(g, re)?;
+    let mut team_sums: Vec<TeamEntry> = team_sums.into_iter().map(|(_, v)| v).collect();
+    team_sums.sort_by(|a, b| b.cmp(&a));
+    let mut quizzer_sums: Vec<QuizzerEntry> = quizzer_sums.into_iter().map(|(_, v)| v).collect();
+    quizzer_sums.sort_by(|a, b| b.cmp(&a));
+    Ok((team_sums, quizzer_sums))
+}

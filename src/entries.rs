@@ -1,3 +1,4 @@
+use core::cmp::Ordering;
 use serde::{Deserialize, Serialize};
 use simple_error::bail;
 use std::collections::HashMap;
@@ -6,6 +7,9 @@ pub trait Entry {
     fn get_name(&self) -> &str;
     fn add_to<'a>(&self, accum: &'a mut Self) -> Result<&'a mut Self, Box<dyn std::error::Error>>;
     fn empty() -> Self;
+    fn avg(&self) -> f32;
+    fn calc(&self) -> f32;
+    fn cmp(&self, other: &Self) -> Ordering;
 }
 
 #[derive(Debug, Serialize, Deserialize)]
@@ -50,6 +54,18 @@ impl Entry for TeamEntry {
             points: 0,
             errors: 0,
         }
+    }
+    fn avg(&self) -> f32 {
+        (self.points as f32) / ((self.quiz.matches(",").count() + 1) as f32)
+    }
+    fn calc(&self) -> f32 {
+        ((self.points as f32) + (self.score as f32) / 10000.)
+            / ((self.quiz.matches(",").count() + 1) as f32)
+    }
+    fn cmp(&self, other: &Self) -> Ordering {
+        let calc1: i64 = ((self.points as i64) << 32) + (self.score as i64);
+        let calc2: i64 = ((other.points as i64) << 32) + (other.score as i64);
+        calc1.cmp(&calc2)
     }
 }
 
@@ -118,6 +134,22 @@ impl Entry for QuizzerEntry {
             q: 0,
             sit: 0,
         }
+    }
+    fn avg(&self) -> f32 {
+        self.points as f32 / ((self.quiz.matches(",").count() + 1) as f32)
+    }
+    fn calc(&self) -> f32 {
+        self.avg()
+            + if self.errors > 0 {
+                1. / (self.errors as f32 * 1000.)
+            } else {
+                0.001
+            }
+    }
+    fn cmp(&self, other: &Self) -> Ordering {
+        self.calc()
+            .partial_cmp(&other.calc())
+            .unwrap_or(Ordering::Equal)
     }
 }
 
