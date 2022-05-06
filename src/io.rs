@@ -3,18 +3,42 @@ extern crate serde_json;
 use crate::entries::*;
 use crate::parse;
 use glob::glob;
+use regex::Regex;
 use std::fs::File;
 use std::path::{Path, PathBuf};
 
-pub fn from_glob<F>(g: &str, mut action: F) -> Result<(), Box<dyn std::error::Error>>
+pub fn from_glob_filter<F, A>(
+    g: &str,
+    filter: F,
+    mut action: A,
+) -> Result<(), Box<dyn std::error::Error>>
 where
-    F: FnMut(PathBuf) -> Result<(), Box<dyn std::error::Error>>,
+    F: Fn(&PathBuf) -> bool,
+    A: FnMut(PathBuf) -> Result<(), Box<dyn std::error::Error>>,
 {
-    for entry in glob(g)?.filter_map(Result::ok) {
-        dbg!(&entry);
+    for entry in glob(g)?.filter_map(Result::ok).filter(filter) {
+        // dbg!(&entry);
         action(entry)?;
     }
     Ok(())
+}
+
+pub fn from_glob_regex<F>(
+    g: &str,
+    regex: Regex,
+    action: F,
+) -> Result<(), Box<dyn std::error::Error>>
+where
+    F: FnMut(PathBuf) -> Result<(), Box<dyn std::error::Error>>,
+{
+    from_glob_filter(g, |e| regex.is_match(e.to_str().unwrap()), action)
+}
+
+pub fn from_glob<F>(g: &str, action: F) -> Result<(), Box<dyn std::error::Error>>
+where
+    F: FnMut(PathBuf) -> Result<(), Box<dyn std::error::Error>>,
+{
+    from_glob_filter(g, |_| true, action)
 }
 
 pub fn translate(entry: PathBuf) -> Result<(), Box<dyn std::error::Error>> {

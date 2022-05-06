@@ -4,9 +4,10 @@ extern crate rocket;
 #[macro_use(context)]
 extern crate quizmeet_rs;
 
-use quizmeet_rs::{entries::*, io::*, quiz_sum::*};
+use percent_encoding::percent_decode;
+use quizmeet_rs::{entries::Entry, quiz_sum::*, stats::*};
+use regex::Regex;
 use rocket_dyn_templates::Template;
-use std::collections::HashMap;
 
 #[get("/")]
 fn index() -> &'static str {
@@ -33,29 +34,54 @@ fn summary() -> String {
 
 #[get("/parse")]
 fn parse() -> String {
-    let g = String::from("json/*.json");
-    let mut team_entries: Vec<TeamEntry> = Vec::new();
-    let mut quizzer_entries: Vec<QuizzerEntry> = Vec::new();
-    from_glob(&g, |entry| {
-        let result = read(entry.as_path())?;
-        team_entries.extend(result.0);
-        quizzer_entries.extend(result.1);
-        Ok(())
-    })
-    .unwrap();
-    let team_sums: HashMap<String, TeamEntry> = group_by_name(team_entries)
-        .into_iter()
-        .map(|(k, v)| (k, sum(v).unwrap()))
-        .collect();
-    let quizzer_sums: HashMap<String, QuizzerEntry> = group_by_name(quizzer_entries)
-        .into_iter()
-        .map(|(k, v)| (k, sum(v).unwrap()))
-        .collect();
+    let (team_sums, quizzer_sums) = open_json(Some(String::from("json/*.json")), None).unwrap();
 
     format!(
         "team_sums: {:#?}\nquizzer_sums: {:#?}",
         team_sums, quizzer_sums
     )
+}
+
+fn table_template(regex: Option<Regex>) -> Template {
+    let (team_sums, quizzer_sums) = get_lists(Some(String::from("json/*.json")), regex).unwrap();
+    let team_avgs: Vec<String> = team_sums
+        .iter()
+        .map(|v| format!("{:.2}", v.avg()))
+        .collect();
+    let quizzer_avgs: Vec<String> = quizzer_sums
+        .iter()
+        .map(|v| format!("{:.2}", v.avg()))
+        .collect();
+
+    Template::render(
+        "table-view",
+        context! {
+            team_sums,
+            team_avgs,
+            quizzer_sums,
+            quizzer_avgs,
+        },
+    )
+}
+
+#[get("/table")]
+pub fn table() -> Template {
+    table_template(None)
+}
+
+#[get("/table/div/<div>")]
+pub fn table_div(div: &str) -> Template {
+    let mut r = String::from("D");
+    r += div;
+    r += r"Q(?P<q>(\d|\w)+).json$";
+    table_template(Some(Regex::new(r.as_str()).unwrap()))
+}
+
+#[get("/table/<regex>")]
+pub fn table_regex(regex: &str) -> Template {
+    let iter = percent_decode(regex.as_bytes());
+    let decoded = iter.decode_utf8_lossy().into_owned();
+    table_template(Some(Regex::new(&decoded).unwrap()))
 }
 
 #[get("/tera")]
@@ -74,6 +100,6 @@ pub fn tera() -> Template {
 #[launch]
 fn rocket() -> _ {
     rocket::build()
-        .mount("/", routes![index, summary, parse, tera])
+        .mount("/", routes![index, summary, parse, table, table_div, table_regex, tera])
         .attach(Template::fairing())
 }

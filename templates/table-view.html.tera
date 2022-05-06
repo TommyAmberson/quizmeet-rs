@@ -1,0 +1,19 @@
+{% extends "base" %}
+
+{% block content %}
+    <form onSubmit="return redirect();">
+        <label for="regex">Regex:</label><br>
+        <input id="regex" type="text" class="box" autofocus /><br><br>
+        <input type="submit" class="submit" value="SUBMIT" />
+    </form>
+    <script>
+        function redirect(){
+            var response = document.getElementById('regex').value;
+            response = encodeURIComponent(response);
+            location.replace(response);
+            return false;
+        }
+    </script>
+
+    {% include "table" %}
+{% endblock content %}
