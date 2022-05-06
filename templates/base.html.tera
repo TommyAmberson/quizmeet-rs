@@ -3,6 +3,11 @@
   <head>
     <meta charset="utf-8" />
     <title>QuizMeet</title>
+    <style>
+      table, th, td {
+        border: 1px solid;
+      }
+    </style>
   </head>
   <body>
     {% block content %}{% endblock content %}
