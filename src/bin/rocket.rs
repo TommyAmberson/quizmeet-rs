@@ -4,6 +4,7 @@ extern crate rocket;
 #[macro_use(context)]
 extern crate quizmeet_rs;
 
+use percent_encoding::percent_decode;
 use quizmeet_rs::{entries::Entry, quiz_sum::*, stats::*};
 use regex::Regex;
 use rocket_dyn_templates::Template;
@@ -68,12 +69,19 @@ pub fn table() -> Template {
     table_template(None)
 }
 
-#[get("/table/<div>")]
+#[get("/table/div/<div>")]
 pub fn table_div(div: &str) -> Template {
     let mut r = String::from("D");
     r += div;
     r += r"Q(?P<q>(\d|\w)+).json$";
     table_template(Some(Regex::new(r.as_str()).unwrap()))
+}
+
+#[get("/table/<regex>")]
+pub fn table_regex(regex: &str) -> Template {
+    let iter = percent_decode(regex.as_bytes());
+    let decoded = iter.decode_utf8_lossy().into_owned();
+    table_template(Some(Regex::new(&decoded).unwrap()))
 }
 
 #[get("/tera")]
@@ -92,6 +100,6 @@ pub fn tera() -> Template {
 #[launch]
 fn rocket() -> _ {
     rocket::build()
-        .mount("/", routes![index, summary, parse, table, table_div, tera])
+        .mount("/", routes![index, summary, parse, table, table_div, table_regex, tera])
         .attach(Template::fairing())
 }
