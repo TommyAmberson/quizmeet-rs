@@ -5,7 +5,7 @@ extern crate rocket;
 extern crate quizmeet_rs;
 
 use percent_encoding::percent_decode;
-use quizmeet_rs::{entries::Entry, quiz_sum::*, stats::*};
+use quizmeet_rs::{entries::Entry, stats::*};
 use regex::Regex;
 use rocket_dyn_templates::Template;
 
@@ -13,24 +13,6 @@ use rocket_dyn_templates::Template;
 // fn index() -> &'static str {
 //     "Hello, world!"
 // }
-
-#[get("/summary")]
-fn summary() -> String {
-    // println!("{}", quiz_sum::hello());
-    let mut sum = Summary::new();
-    sum.open_ods().unwrap();
-    // dbg!(&sum);
-    // dbg!(sum.get_team_prelims(1));
-    let mut result = String::from("");
-    let t = sum.get_team_order(|q| q.div == 1 && matches!(q.quiz, QuizType::Preliminary(_)));
-    dbg!(&t);
-    result.push_str(&format!("{:?}", &t));
-    let q = sum.get_quizzer_order(|q| q.div == 1);
-    dbg!(&q);
-    result.push_str(&format!("{:?}", q));
-
-    result
-}
 
 #[get("/parse")]
 fn parse() -> String {
@@ -114,7 +96,7 @@ fn rocket() -> _ {
     rocket::build()
         .mount(
             "/",
-            routes![summary, parse, table, table_plain, table_div, table_regex, table_regex_plain, tera],
+            routes![parse, table, table_plain, table_div, table_regex, table_regex_plain, tera],
         )
         .attach(Template::fairing())
 }
