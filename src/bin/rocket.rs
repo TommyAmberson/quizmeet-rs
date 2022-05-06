@@ -4,7 +4,8 @@ extern crate rocket;
 #[macro_use(context)]
 extern crate quizmeet_rs;
 
-use quizmeet_rs::{quiz_sum::*, stats::*};
+use quizmeet_rs::{entries::Entry, quiz_sum::*, stats::*};
+use regex::Regex;
 use rocket_dyn_templates::Template;
 
 #[get("/")]
@@ -40,6 +41,41 @@ fn parse() -> String {
     )
 }
 
+fn table_template(regex: Option<Regex>) -> Template {
+    let (team_sums, quizzer_sums) = get_lists(Some(String::from("json/*.json")), regex).unwrap();
+    let team_avgs: Vec<String> = team_sums
+        .iter()
+        .map(|v| format!("{:.2}", v.avg()))
+        .collect();
+    let quizzer_avgs: Vec<String> = quizzer_sums
+        .iter()
+        .map(|v| format!("{:.2}", v.avg()))
+        .collect();
+
+    Template::render(
+        "table-view",
+        context! {
+            team_sums,
+            team_avgs,
+            quizzer_sums,
+            quizzer_avgs,
+        },
+    )
+}
+
+#[get("/table")]
+pub fn table() -> Template {
+    table_template(None)
+}
+
+#[get("/table/<div>")]
+pub fn table_div(div: &str) -> Template {
+    let mut r = String::from("D");
+    r += div;
+    r += r"Q(?P<q>(\d|\w)+).json$";
+    table_template(Some(Regex::new(r.as_str()).unwrap()))
+}
+
 #[get("/tera")]
 pub fn tera() -> Template {
     let name = String::from("Tommy");
@@ -56,6 +92,6 @@ pub fn tera() -> Template {
 #[launch]
 fn rocket() -> _ {
     rocket::build()
-        .mount("/", routes![index, summary, parse, tera])
+        .mount("/", routes![index, summary, parse, table, table_div, tera])
         .attach(Template::fairing())
 }
