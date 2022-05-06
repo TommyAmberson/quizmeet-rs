@@ -2,8 +2,9 @@
 
 {% block content %}
     <form onSubmit="return redirect();">
-    <input id="regex" type="text" class="box" autofocus />
-    <input type="submit" class="submit" value="SUBMIT" />
+        <label for="regex">Regex:</label><br>
+        <input id="regex" type="text" class="box" autofocus /><br><br>
+        <input type="submit" class="submit" value="SUBMIT" />
     </form>
     <script>
         function redirect(){
