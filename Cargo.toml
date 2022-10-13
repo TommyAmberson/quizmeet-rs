@@ -1,0 +1,11 @@
+[package]
+name = "quizmeet-rs"
+version = "0.1.2"
+edition = "2021"
+
+[workspace]
+members = ["rocket"]
+
+[[bin]]
+name = "main"
+path = "src/main.rs"
