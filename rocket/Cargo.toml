@@ -1,5 +1,5 @@
 [package]
-name = "quizmeet-rs"
+name = "quizmeet-rs-rocket"
 version = "0.1.2"
 edition = "2021"
 
