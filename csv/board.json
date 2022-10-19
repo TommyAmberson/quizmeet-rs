@@ -1,0 +1,14 @@
+{
+    "questions": {
+        "Q1": {
+            "team": 1,
+            "quizzer": 1,
+            "answer": "c"
+        },
+        "Q2": {
+            "team": 1,
+            "quizzer": 1,
+            "answer": "c"
+        }
+    }
+}
