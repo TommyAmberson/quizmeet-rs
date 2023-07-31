@@ -1,3 +1,2 @@
-/target
-/ods/*
-/json/*
+target/
+Cargo.lock
