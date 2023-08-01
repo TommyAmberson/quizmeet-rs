@@ -1,0 +1,59 @@
+<h1>Teams</h1>
+
+<table>
+    <tr>
+        <th>Place</th>
+        <th>Name</th>
+        <th>Average Points</th>
+        <th>Quizzes</th>
+    </tr>
+    {% for sum in team_sums %}
+        {% set i = loop.index - 1 %}
+        <tr>
+            <td>{{ loop.index }}</td>
+            <td>{{ sum.name }}</td>
+            <td>{{ team_avgs[i] }}</td>
+            <td>{{ sum.quiz }}</td>
+        </tr>
+    {% endfor %}
+</table>
+
+<h1>Quizzers</h1>
+
+<table>
+    <tr>
+        <th>Place</th>
+        <th>Name</th>
+        <th>Team</th>
+        <th>Average Points</th>
+        <th>Total Points</th>
+        <th>Errors</th>
+        <th>Jumps</th>
+        <th>Ref</th>
+        <th>Ftv</th>
+        <th>Int</th>
+        <th>Ma</th>
+        <th>Q</th>
+        <th>Sit</th>
+        <th>Quizzes</th>
+    </tr>
+    {% for sum in quizzer_sums %}
+        {% set i = loop.index - 1 %}
+        <tr>
+            <td>{{ loop.index }}</td>
+            <td>{{ sum.name }}</td>
+            <td>{{ sum.team }}</td>
+            <td>{{ quizzer_avgs[i] }}</td>
+            <td>{{ sum.points }}</td>
+            <td>{{ sum.errors }}</td>
+            <td>{{ sum.jumps }}</td>
+            <td>{{ sum.refer }}</td>
+            <td>{{ sum.ftv }}</td>
+            <td>{{ sum.int }}</td>
+            <td>{{ sum.ma }}</td>
+            <td>{{ sum.q }}</td>
+            <td>{{ sum.sit }}</td>
+            <td>{{ sum.quiz }}</td>
+        </tr>
+    {% endfor %}
+</table>

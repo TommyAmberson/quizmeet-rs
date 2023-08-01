@@ -1,2 +1,3 @@
 [workspace]
-members = ["core", "idl", "io"]
+resolver = "2"
+members = ["core", "idl", "io", "rocket", "actix"]

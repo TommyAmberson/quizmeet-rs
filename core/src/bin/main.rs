@@ -7,5 +7,5 @@ fn main() {
 
     let d1q1 = read_from_file(Path::new("../ods/D1Q1.ods")).unwrap();
 
-    log::info!("{d1q1:?}");
+    log::info!("{d1q1:#?}");
 }

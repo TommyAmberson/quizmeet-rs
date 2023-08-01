@@ -1,5 +1,5 @@
 [package]
-name = "quizmeet-rs"
+name = "quizmeet-rs-actix"
 version = "0.1.0"
 edition = "2021"
 
@@ -13,8 +13,6 @@ env_logger = "0.10.0"
 log = "0.4.19"
 polodb_core = "*"
 regex = "1.9.1"
-rocket = "0.5.0-rc.3"
-rocket_dyn_templates = { version = "0.1.0-rc.3", features = ["tera"] }
 serde = "1.0.179"
 serde_json = "1.0.104"
 spreadsheet-ods = "0.16.0"
@@ -25,9 +23,3 @@ path = "../idl"
 
 [dependencies.quizmeet-rs-io]
 path = "../io"
-
-[dependencies.quizmeet-rs-rocket]
-path = "../rocket"
-
-[dependencies.quizmeet-rs-actix]
-path = "../actix"
