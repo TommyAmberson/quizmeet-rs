@@ -55,7 +55,7 @@ fn parse_error(sheet: &Sheet, row: u32, col: u32, val: &str) -> anyhow::Error {
         val,
         row,
         col,
-        sheet
+        sheet.name()
     )
 }
 
@@ -93,16 +93,16 @@ fn team(sheet: &Sheet, row: u32) -> Result<TeamEntry> {
 fn quizzer(sheet: &Sheet, row: u32) -> Result<QuizzerEntry> {
     Ok(QuizzerEntry {
         name: parse_str(sheet, row, 0, "name")?,
-        team: parse_str(sheet, row, 0, "team")?,
-        quiz: parse_str(sheet, row, 1, "quiz")?,
-        points: parse_i32(sheet, row, 4, "points")?,
-        errors: parse_i32(sheet, row, 5, "errors")?,
-        jumps: parse_i32(sheet, row, 6, "jumps")?,
-        refer: parse_i32(sheet, row, 7, "refer")?,
-        ftv: parse_i32(sheet, row, 8, "ftv")?,
-        int: parse_i32(sheet, row, 9, "int")?,
-        ma: parse_i32(sheet, row, 10, "ma")?,
-        q: parse_i32(sheet, row, 11, "q")?,
-        sit: parse_i32(sheet, row, 12, "sit")?,
+        team: parse_str(sheet, row, 1, "team")?,
+        quiz: parse_str(sheet, row, 2, "quiz")?,
+        points: parse_i32(sheet, row, 3, "points")?,
+        errors: parse_i32(sheet, row, 4, "errors")?,
+        jumps: parse_i32(sheet, row, 5, "jumps")?,
+        refer: parse_i32(sheet, row, 6, "refer")?,
+        ftv: parse_i32(sheet, row, 7, "ftv")?,
+        int: parse_i32(sheet, row, 8, "int")?,
+        ma: parse_i32(sheet, row, 9, "ma")?,
+        q: parse_i32(sheet, row, 10, "q")?,
+        sit: parse_i32(sheet, row, 11, "sit")?,
     })
 }
