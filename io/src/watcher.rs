@@ -1,12 +1,13 @@
 use std::path::Path;
 
+use anyhow::Result;
 use crossbeam_channel::Sender;
 use notify::{Error, Event, EventKind, RecursiveMode, Watcher};
 use quizmeet_rs_idl::quiz::Quiz;
 
 use crate::parse_ods::read_from_file;
 
-pub fn watch_for_files(path: &Path, sender: Sender<anyhow::Result<Quiz>>) -> anyhow::Result<()> {
+pub fn watch_for_files(path: &Path, sender: Sender<Result<Quiz>>) -> Result<()> {
     let mut watcher = notify::recommended_watcher(move |res: Result<Event, Error>| match res {
         Ok(event) => {
             log::trace!("event: {:?}", event);

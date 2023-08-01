@@ -1,9 +1,9 @@
 use std::collections::HashMap;
 
+use anyhow::{bail, Result};
 use serde::{Deserialize, Serialize};
 
 use crate::quiz::{Team, TeamEntry};
-use crate::stats::error::StatsError;
 use crate::stats::Stats;
 
 #[derive(Debug, Serialize, Deserialize, PartialEq)]
@@ -13,12 +13,9 @@ pub struct TeamStats {
 }
 
 impl Stats<TeamEntry> for TeamStats {
-    fn update(&mut self, entry: TeamEntry) -> Result<(), StatsError> {
+    fn update(&mut self, entry: TeamEntry) -> Result<()> {
         if entry.name != self.name {
-            return Err(StatsError::BadName {
-                stats: self.name.clone(),
-                entry: format!("{entry:?}"),
-            });
+            bail!("Name must be the same for stats: '{self:?}' and entry: '{entry:?}'");
         }
         self.quizzes.insert(entry.quiz.clone(), entry);
         Ok(())

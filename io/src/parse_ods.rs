@@ -1,10 +1,10 @@
 use std::path::Path;
 
-use anyhow::bail;
+use anyhow::{bail, Result};
 use quizmeet_rs_idl::quiz::{Quiz, QuizzerEntry, TeamEntry};
 use spreadsheet_ods::Sheet;
 
-pub fn read_from_file(path: &Path) -> anyhow::Result<Quiz> {
+pub fn read_from_file(path: &Path) -> Result<Quiz> {
     log::debug!("reading path: {path:?}");
 
     let wb = spreadsheet_ods::read_ods(path)?;
@@ -59,27 +59,27 @@ fn parse_error(sheet: &Sheet, row: u32, col: u32, val: &str) -> anyhow::Error {
     )
 }
 
-fn parse_str(sheet: &Sheet, row: u32, col: u32, val: &str) -> anyhow::Result<String> {
+fn parse_str(sheet: &Sheet, row: u32, col: u32, val: &str) -> Result<String> {
     sheet
         .value(row, col)
         .as_str_opt()
         .ok_or_else(|| parse_error(sheet, row, col, val))
         .map(|s| s.to_owned())
 }
-fn parse_i32(sheet: &Sheet, row: u32, col: u32, val: &str) -> anyhow::Result<i32> {
+fn parse_i32(sheet: &Sheet, row: u32, col: u32, val: &str) -> Result<i32> {
     sheet
         .value(row, col)
         .as_i32_opt()
         .ok_or_else(|| parse_error(sheet, row, col, val))
 }
-fn parse_f64(sheet: &Sheet, row: u32, col: u32, val: &str) -> anyhow::Result<f64> {
+fn parse_f64(sheet: &Sheet, row: u32, col: u32, val: &str) -> Result<f64> {
     sheet
         .value(row, col)
         .as_f64_opt()
         .ok_or_else(|| parse_error(sheet, row, col, val))
 }
 
-fn team(sheet: &Sheet, row: u32) -> anyhow::Result<TeamEntry> {
+fn team(sheet: &Sheet, row: u32) -> Result<TeamEntry> {
     Ok(TeamEntry {
         name: parse_str(sheet, row, 0, "name")?,
         quiz: parse_str(sheet, row, 1, "quiz")?,
@@ -90,7 +90,7 @@ fn team(sheet: &Sheet, row: u32) -> anyhow::Result<TeamEntry> {
     })
 }
 
-fn quizzer(sheet: &Sheet, row: u32) -> anyhow::Result<QuizzerEntry> {
+fn quizzer(sheet: &Sheet, row: u32) -> Result<QuizzerEntry> {
     Ok(QuizzerEntry {
         name: parse_str(sheet, row, 0, "name")?,
         team: parse_str(sheet, row, 0, "team")?,

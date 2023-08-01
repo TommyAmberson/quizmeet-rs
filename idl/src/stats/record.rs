@@ -1,9 +1,9 @@
 use std::collections::HashMap;
 
+use anyhow::Result;
 use serde::{Deserialize, Serialize};
 
 use crate::quiz::Quiz;
-use crate::stats::error::StatsError;
 use crate::stats::quizzer::QuizzerStats;
 use crate::stats::team::TeamStats;
 use crate::stats::Stats;
@@ -19,7 +19,7 @@ impl StatsRecord {
         Self::default()
     }
 
-    pub fn update(&mut self, quiz: Quiz) -> Result<(), StatsError> {
+    pub fn update(&mut self, quiz: Quiz) -> Result<()> {
         for team_entry in quiz.team_entries {
             match self.teams.get_mut(&team_entry.name) {
                 Some(team_stats) => {
