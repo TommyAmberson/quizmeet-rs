@@ -1,3 +1,5 @@
+use std::collections::HashMap;
+
 use serde::{Deserialize, Serialize};
 
 use crate::quiz::{Team, TeamEntry};
@@ -7,28 +9,18 @@ use crate::stats::Stats;
 #[derive(Debug, Serialize, Deserialize, PartialEq)]
 pub struct TeamStats {
     pub name: String,
-    pub quizzes: Vec<TeamEntry>,
+    pub quizzes: HashMap<String, TeamEntry>,
 }
 
 impl Stats<TeamEntry> for TeamStats {
-    fn get_name(&self) -> &str {
-        &self.name
-    }
-
-    fn add(&mut self, entry: TeamEntry) -> Result<(), StatsError> {
+    fn update(&mut self, entry: TeamEntry) -> Result<(), StatsError> {
         if entry.name != self.name {
             return Err(StatsError::BadName {
                 stats: self.name.clone(),
                 entry: format!("{entry:?}"),
             });
         }
-        if self.quizzes.contains(&entry) {
-            return Err(StatsError::DuplicateEntry {
-                stats: self.name.clone(),
-                entry: format!("{entry:?}"),
-            });
-        }
-        self.quizzes.push(entry);
+        self.quizzes.insert(entry.quiz.clone(), entry);
         Ok(())
     }
 
@@ -43,21 +35,21 @@ impl Stats<TeamEntry> for TeamStats {
 
 impl From<TeamEntry> for TeamStats {
     fn from(value: TeamEntry) -> Self {
-        Self {
-            name: value.name.clone(),
-            quizzes: vec![value],
-        }
+        let name = value.name.clone();
+        let mut quizzes = HashMap::new();
+        quizzes.insert(value.quiz.clone(), value);
+        Self { name, quizzes }
     }
 }
 
 impl Team for TeamStats {
     fn score(&self) -> i32 {
-        self.quizzes.iter().map(Team::score).sum()
+        self.quizzes.values().map(Team::score).sum()
     }
     fn points(&self) -> i32 {
-        self.quizzes.iter().map(Team::points).sum()
+        self.quizzes.values().map(Team::points).sum()
     }
     fn errors(&self) -> i32 {
-        self.quizzes.iter().map(Team::errors).sum()
+        self.quizzes.values().map(Team::errors).sum()
     }
 }

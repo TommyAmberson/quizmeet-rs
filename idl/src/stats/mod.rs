@@ -8,8 +8,7 @@ pub mod record;
 pub mod team;
 
 pub trait Stats<T: std::fmt::Debug>: From<T> + std::fmt::Debug {
-    fn get_name(&self) -> &str;
-    fn add(&mut self, entry: T) -> Result<(), StatsError>;
+    fn update(&mut self, entry: T) -> Result<(), StatsError>;
     fn avg(&self) -> f32;
     fn tie_breaker(&self) -> f32;
     fn partial_cmp(&self, other: &Self) -> Option<Ordering> {

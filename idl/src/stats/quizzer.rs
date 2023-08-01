@@ -1,3 +1,5 @@
+use std::collections::HashMap;
+
 use serde::{Deserialize, Serialize};
 
 use crate::quiz::{Quizzer, QuizzerEntry};
@@ -7,30 +9,19 @@ use crate::stats::Stats;
 #[derive(Debug, Serialize, Deserialize, PartialEq)]
 pub struct QuizzerStats {
     pub name: String,
-    pub team: String,
-    pub quizzes: Vec<QuizzerEntry>,
+    pub quizzes: HashMap<String, QuizzerEntry>,
 }
 
 impl Stats<QuizzerEntry> for QuizzerStats {
-    fn get_name(&self) -> &str {
-        &self.name
-    }
-
-    fn add(&mut self, entry: QuizzerEntry) -> Result<(), StatsError> {
+    fn update(&mut self, entry: QuizzerEntry) -> Result<(), StatsError> {
         if entry.name != self.name {
             return Err(StatsError::BadName {
                 stats: self.name.clone(),
                 entry: format!("{entry:?}"),
             });
         }
-        if self.quizzes.contains(&entry) {
-            return Err(StatsError::DuplicateEntry {
-                stats: self.name.clone(),
-                entry: format!("{entry:?}"),
-            });
-        }
 
-        self.quizzes.push(entry);
+        self.quizzes.insert(entry.quiz.clone(), entry);
         Ok(())
     }
 
@@ -49,40 +40,39 @@ impl Stats<QuizzerEntry> for QuizzerStats {
 
 impl From<QuizzerEntry> for QuizzerStats {
     fn from(value: QuizzerEntry) -> Self {
-        Self {
-            name: value.name.clone(),
-            team: value.team.clone(),
-            quizzes: vec![value],
-        }
+        let name = value.name.clone();
+        let mut quizzes = HashMap::new();
+        quizzes.insert(value.quiz.clone(), value);
+        Self { name, quizzes }
     }
 }
 
 impl Quizzer for QuizzerStats {
     fn points(&self) -> i32 {
-        self.quizzes.iter().map(Quizzer::points).sum()
+        self.quizzes.values().map(Quizzer::points).sum()
     }
     fn errors(&self) -> i32 {
-        self.quizzes.iter().map(Quizzer::errors).sum()
+        self.quizzes.values().map(Quizzer::errors).sum()
     }
     fn jumps(&self) -> i32 {
-        self.quizzes.iter().map(Quizzer::jumps).sum()
+        self.quizzes.values().map(Quizzer::jumps).sum()
     }
     fn refer(&self) -> i32 {
-        self.quizzes.iter().map(Quizzer::refer).sum()
+        self.quizzes.values().map(Quizzer::refer).sum()
     }
     fn ftv(&self) -> i32 {
-        self.quizzes.iter().map(Quizzer::ftv).sum()
+        self.quizzes.values().map(Quizzer::ftv).sum()
     }
     fn int(&self) -> i32 {
-        self.quizzes.iter().map(Quizzer::int).sum()
+        self.quizzes.values().map(Quizzer::int).sum()
     }
     fn ma(&self) -> i32 {
-        self.quizzes.iter().map(Quizzer::ma).sum()
+        self.quizzes.values().map(Quizzer::ma).sum()
     }
     fn q(&self) -> i32 {
-        self.quizzes.iter().map(Quizzer::q).sum()
+        self.quizzes.values().map(Quizzer::q).sum()
     }
     fn sit(&self) -> i32 {
-        self.quizzes.iter().map(Quizzer::sit).sum()
+        self.quizzes.values().map(Quizzer::sit).sum()
     }
 }

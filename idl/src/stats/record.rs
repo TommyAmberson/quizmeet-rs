@@ -19,11 +19,11 @@ impl StatsRecord {
         Self::default()
     }
 
-    pub fn add(&mut self, quiz: Quiz) -> Result<(), StatsError> {
+    pub fn update(&mut self, quiz: Quiz) -> Result<(), StatsError> {
         for team_entry in quiz.team_entries {
             match self.teams.get_mut(&team_entry.name) {
                 Some(team_stats) => {
-                    team_stats.add(team_entry)?;
+                    team_stats.update(team_entry)?;
                     log::trace!(
                         "Team: '{}' now has an average of '{}'",
                         team_stats.name,
@@ -44,7 +44,7 @@ impl StatsRecord {
         for quizzer_entry in quiz.quizzer_entries {
             match self.quizzers.get_mut(&quizzer_entry.name) {
                 Some(quizzer_stats) => {
-                    quizzer_stats.add(quizzer_entry)?;
+                    quizzer_stats.update(quizzer_entry)?;
                     log::trace!(
                         "Quizzer: '{}' now has an average of '{}'",
                         quizzer_stats.name,
