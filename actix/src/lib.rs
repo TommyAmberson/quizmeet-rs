@@ -1,10 +1,40 @@
 use std::collections::HashMap;
+use std::net::ToSocketAddrs;
+use std::sync::Arc;
 
 use actix_web::error::ErrorInternalServerError;
-use actix_web::{get, web, HttpResponse, Responder};
+use actix_web::{get, middleware, web, App, HttpResponse, HttpServer, Responder};
 use actix_web_lab::respond::Html;
+use polodb_core::Database;
+use tera::Tera;
+use tokio::sync::RwLock;
+
+use crate::error::error_handlers;
 
 pub mod error;
+
+pub async fn start_server<A>(db: Arc<RwLock<Database>>, addr: A) -> std::io::Result<()>
+where
+    A: ToSocketAddrs,
+{
+    HttpServer::new(move || {
+        let p = concat!(env!("CARGO_MANIFEST_DIR"), "/templates/**/*");
+        log::debug!("{p}");
+        let tera = Tera::new(p).unwrap();
+
+        let db = db.clone();
+
+        App::new()
+            .app_data(web::Data::new(tera))
+            .app_data(web::Data::new(db))
+            .wrap(middleware::Logger::default())
+            .service(web::resource("/").route(web::get().to(index)))
+            .service(web::scope("").wrap(error_handlers()))
+    })
+    .bind(addr)?
+    .run()
+    .await
+}
 
 #[get("/")]
 pub async fn hello() -> impl Responder {

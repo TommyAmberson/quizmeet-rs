@@ -19,6 +19,7 @@ serde_json = "1.0.104"
 spreadsheet-ods = "0.16.0"
 tera = "1.19.0"
 thiserror = "1.0.44"
+tokio = { version = "1.29.1", features = ["sync"] }
 
 [dependencies.quizmeet-rs-idl]
 path = "../idl"
