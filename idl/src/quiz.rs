@@ -1,33 +1,11 @@
-use std::fmt::Display;
-
 use serde::{Deserialize, Serialize};
+
+use crate::name::{QuizName, QuizzerName, TeamName};
 
 #[derive(Debug, Serialize, Deserialize, PartialEq)]
 pub struct Quiz {
     pub team_entries: Vec<TeamEntry>,
     pub quizzer_entries: Vec<QuizzerEntry>,
-}
-
-#[derive(Debug, Serialize, Deserialize, PartialEq, Eq, Hash, Clone)]
-pub struct QuizzerName(String);
-impl Display for QuizzerName {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        write!(f, "{}", self.0)
-    }
-}
-#[derive(Debug, Serialize, Deserialize, PartialEq, Eq, Hash, Clone)]
-pub struct TeamName(String);
-impl Display for TeamName {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        write!(f, "{}", self.0)
-    }
-}
-#[derive(Debug, Serialize, Deserialize, PartialEq, Eq, Hash, Clone)]
-pub struct QuizName(String);
-impl Display for QuizName {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        write!(f, "{}", self.0)
-    }
 }
 
 #[derive(Debug, Serialize, Deserialize, PartialEq)]

@@ -1,4 +1,5 @@
 use std::cmp::Ordering;
+use std::fmt::Debug;
 
 use anyhow::Result;
 
@@ -6,7 +7,7 @@ pub mod quizzer;
 pub mod record;
 pub mod team;
 
-pub trait Stats<T: std::fmt::Debug>: From<T> + std::fmt::Debug {
+pub trait Stats<T: Debug>: Debug {
     fn update(&mut self, entry: T) -> Result<()>;
     fn avg(&self) -> f32;
     fn tie_breaker(&self) -> f32;

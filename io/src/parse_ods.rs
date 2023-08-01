@@ -81,8 +81,8 @@ fn parse_f64(sheet: &Sheet, row: u32, col: u32, val: &str) -> Result<f64> {
 
 fn team(sheet: &Sheet, row: u32) -> Result<TeamEntry> {
     Ok(TeamEntry {
-        name: parse_str(sheet, row, 0, "name")?,
-        quiz: parse_str(sheet, row, 1, "quiz")?,
+        name: parse_str(sheet, row, 0, "name")?.into(),
+        quiz: parse_str(sheet, row, 1, "quiz")?.into(),
         place: parse_f64(sheet, row, 2, "place")?,
         score: parse_i32(sheet, row, 3, "score")?,
         points: parse_i32(sheet, row, 4, "points")?,
@@ -92,9 +92,9 @@ fn team(sheet: &Sheet, row: u32) -> Result<TeamEntry> {
 
 fn quizzer(sheet: &Sheet, row: u32) -> Result<QuizzerEntry> {
     Ok(QuizzerEntry {
-        name: parse_str(sheet, row, 0, "name")?,
-        team: parse_str(sheet, row, 1, "team")?,
-        quiz: parse_str(sheet, row, 2, "quiz")?,
+        name: parse_str(sheet, row, 0, "name")?.into(),
+        team: parse_str(sheet, row, 1, "team")?.into(),
+        quiz: parse_str(sheet, row, 2, "quiz")?.into(),
         points: parse_i32(sheet, row, 3, "points")?,
         errors: parse_i32(sheet, row, 4, "errors")?,
         jumps: parse_i32(sheet, row, 5, "jumps")?,

@@ -3,7 +3,8 @@ use std::collections::HashMap;
 use anyhow::{bail, Result};
 use serde::{Deserialize, Serialize};
 
-use crate::quiz::{QuizName, Team, TeamEntry, TeamName};
+use crate::name::{QuizName, TeamName};
+use crate::quiz::{Team, TeamEntry};
 use crate::stats::Stats;
 
 #[derive(Debug, Serialize, Deserialize, PartialEq)]
@@ -30,12 +31,12 @@ impl Stats<TeamEntry> for TeamStats {
     }
 }
 
-impl From<TeamEntry> for TeamStats {
-    fn from(value: TeamEntry) -> Self {
-        let name = value.name.clone();
-        let mut quizzes = HashMap::new();
-        quizzes.insert(value.quiz.clone(), value);
-        Self { name, quizzes }
+impl TeamStats {
+    pub fn new(name: TeamName) -> Self {
+        Self {
+            name,
+            quizzes: HashMap::new(),
+        }
     }
 }
 
