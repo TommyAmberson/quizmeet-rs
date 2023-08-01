@@ -1,3 +1,5 @@
+use std::fmt::Display;
+
 use serde::{Deserialize, Serialize};
 
 #[derive(Debug, Serialize, Deserialize, PartialEq)]
@@ -6,10 +8,32 @@ pub struct Quiz {
     pub quizzer_entries: Vec<QuizzerEntry>,
 }
 
+#[derive(Debug, Serialize, Deserialize, PartialEq, Eq, Hash, Clone)]
+pub struct QuizzerName(String);
+impl Display for QuizzerName {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(f, "{}", self.0)
+    }
+}
+#[derive(Debug, Serialize, Deserialize, PartialEq, Eq, Hash, Clone)]
+pub struct TeamName(String);
+impl Display for TeamName {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(f, "{}", self.0)
+    }
+}
+#[derive(Debug, Serialize, Deserialize, PartialEq, Eq, Hash, Clone)]
+pub struct QuizName(String);
+impl Display for QuizName {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(f, "{}", self.0)
+    }
+}
+
 #[derive(Debug, Serialize, Deserialize, PartialEq)]
 pub struct TeamEntry {
-    pub name: String,
-    pub quiz: String,
+    pub name: TeamName,
+    pub quiz: QuizName,
     pub place: f64,
     pub score: i32,
     pub points: i32,
@@ -35,9 +59,9 @@ impl Team for TeamEntry {
 
 #[derive(Debug, Serialize, Deserialize, PartialEq)]
 pub struct QuizzerEntry {
-    pub name: String,
-    pub team: String,
-    pub quiz: String,
+    pub name: QuizzerName,
+    pub team: TeamName,
+    pub quiz: QuizName,
     pub points: i32,
     pub errors: i32,
     pub jumps: i32,

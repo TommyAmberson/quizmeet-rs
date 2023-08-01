@@ -3,13 +3,13 @@ use std::collections::HashMap;
 use anyhow::{bail, Result};
 use serde::{Deserialize, Serialize};
 
-use crate::quiz::{Team, TeamEntry};
+use crate::quiz::{QuizName, Team, TeamEntry, TeamName};
 use crate::stats::Stats;
 
 #[derive(Debug, Serialize, Deserialize, PartialEq)]
 pub struct TeamStats {
-    pub name: String,
-    pub quizzes: HashMap<String, TeamEntry>,
+    pub name: TeamName,
+    pub quizzes: HashMap<QuizName, TeamEntry>,
 }
 
 impl Stats<TeamEntry> for TeamStats {
