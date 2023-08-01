@@ -1,28 +1,27 @@
-use actix_web::{get, post, web, App, HttpResponse, HttpServer, Responder};
+use std::collections::HashMap;
 
-#[get("/")]
-async fn hello() -> impl Responder {
-    HttpResponse::Ok().body("Hello world!")
+use actix_web::{error, middleware, web, App, Error, HttpServer, Responder, Result};
+use actix_web_lab::respond::Html;
+use quizmeet_rs_actix::error::error_handlers;
+use tera::Tera;
+
+// store tera template in application state
+async fn index(
+    tmpl: web::Data<tera::Tera>,
+    query: web::Query<HashMap<String, String>>,
+) -> Result<impl Responder, Error> {
+    let s = if let Some(name) = query.get("name") {
+        // submitted form
+        let mut ctx = tera::Context::new();
+        ctx.insert("name", name);
+        ctx.insert("text", "Welcome!");
+        tmpl.render("user.html", &ctx)
+            .map_err(|_| error::ErrorInternalServerError("Template error"))?
+    } else {
+        tmpl.render("index.html", &tera::Context::new())
+            .map_err(|_| error::ErrorInternalServerError("Template error"))?
+    };
+
+    Ok(Html(s))
 }
 
-#[post("/echo")]
-async fn echo(req_body: String) -> impl Responder {
-    HttpResponse::Ok().body(req_body)
-}
-
-async fn manual_hello() -> impl Responder {
-    HttpResponse::Ok().body("Hey there!")
-}
-
-#[actix_web::main]
-async fn main() -> std::io::Result<()> {
-    HttpServer::new(|| {
-        App::new()
-            .service(hello)
-            .service(echo)
-            .route("/hey", web::get().to(manual_hello))
-    })
-    .bind(("127.0.0.1", 8080))?
-    .run()
-    .await
-}
