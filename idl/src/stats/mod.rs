@@ -8,7 +8,7 @@ pub mod record;
 pub mod team;
 
 pub trait Stats<T: Debug>: Debug {
-    fn update(&mut self, entry: T) -> Result<()>;
+    fn update(&mut self, entry: T) -> Result<bool>;
     fn avg(&self) -> f32;
     fn tie_breaker(&self) -> f32;
     fn partial_cmp(&self, other: &Self) -> Option<Ordering> {

@@ -1,14 +1,15 @@
 use serde::{Deserialize, Serialize};
 
 use crate::name::{QuizName, QuizzerName, TeamName};
+use redis_macros::{FromRedisValue, ToRedisArgs};
 
-#[derive(Debug, Serialize, Deserialize, PartialEq)]
+#[derive(Debug, Serialize, Deserialize, FromRedisValue, ToRedisArgs, PartialEq)]
 pub struct Quiz {
     pub team_entries: Vec<TeamEntry>,
     pub quizzer_entries: Vec<QuizzerEntry>,
 }
 
-#[derive(Debug, Serialize, Deserialize, PartialEq)]
+#[derive(Debug, Serialize, Deserialize, FromRedisValue, ToRedisArgs, PartialEq)]
 pub struct TeamEntry {
     pub name: TeamName,
     pub quiz: QuizName,
@@ -35,7 +36,7 @@ impl Team for TeamEntry {
     }
 }
 
-#[derive(Debug, Serialize, Deserialize, PartialEq)]
+#[derive(Debug, Serialize, Deserialize, FromRedisValue, ToRedisArgs, PartialEq)]
 pub struct QuizzerEntry {
     pub name: QuizzerName,
     pub team: TeamName,

@@ -1,26 +1,36 @@
 use std::collections::HashMap;
 
 use anyhow::{bail, Result};
+use redis_macros::{FromRedisValue, ToRedisArgs};
 use serde::{Deserialize, Serialize};
 
 use crate::name::{QuizName, QuizzerName};
 use crate::quiz::{Quizzer, QuizzerEntry};
 use crate::stats::Stats;
 
-#[derive(Debug, Serialize, Deserialize, PartialEq)]
+#[derive(Debug, Serialize, Deserialize, FromRedisValue, ToRedisArgs, PartialEq)]
 pub struct QuizzerStats {
     pub name: QuizzerName,
     pub quizzes: HashMap<QuizName, QuizzerEntry>,
 }
 
 impl Stats<QuizzerEntry> for QuizzerStats {
-    fn update(&mut self, entry: QuizzerEntry) -> Result<()> {
+    fn update(&mut self, entry: QuizzerEntry) -> Result<bool> {
         if entry.name != self.name {
             bail!("Name must be the same for stats: '{self:?}' and entry: '{entry:?}'");
         }
 
+        if self
+            .quizzes
+            .get(&entry.quiz)
+            .map(|e| e == &entry)
+            .unwrap_or(false)
+        {
+            return Ok(false);
+        }
+
         self.quizzes.insert(entry.quiz.clone(), entry);
-        Ok(())
+        Ok(true)
     }
 
     fn avg(&self) -> f32 {

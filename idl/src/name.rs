@@ -14,6 +14,11 @@ impl<S: Into<String>> From<S> for QuizzerName {
         Self(value.into())
     }
 }
+impl AsRef<str> for QuizzerName {
+    fn as_ref(&self) -> &str {
+        &self.0
+    }
+}
 
 #[derive(Debug, Serialize, Deserialize, PartialEq, Eq, Hash, Clone)]
 pub struct TeamName(pub String);
@@ -27,6 +32,11 @@ impl<S: Into<String>> From<S> for TeamName {
         Self(value.into())
     }
 }
+impl AsRef<str> for TeamName {
+    fn as_ref(&self) -> &str {
+        &self.0
+    }
+}
 
 #[derive(Debug, Serialize, Deserialize, PartialEq, Eq, Hash, Clone)]
 pub struct QuizName(pub String);
@@ -38,5 +48,10 @@ impl Display for QuizName {
 impl<S: Into<String>> From<S> for QuizName {
     fn from(value: S) -> Self {
         Self(value.into())
+    }
+}
+impl AsRef<str> for QuizName {
+    fn as_ref(&self) -> &str {
+        &self.0
     }
 }
